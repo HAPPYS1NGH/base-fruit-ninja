@@ -59,7 +59,7 @@ export class Fruit {
   name: string;
   sliced: boolean;
   sliceTime: number;
-  sliceParts: { x: number; y: number; vx: number; vy: number; rot: number }[];
+  sliceParts: { x: number; y: number; vx: number; vy: number; rot: number; sliceAngle: number }[];
   image: HTMLImageElement;
 
   constructor(canvasWidth: number, type: typeof FRUITS[0]) {
@@ -126,21 +126,26 @@ export class Fruit {
     this.sliced = true;
     this.sliceTime = Date.now();
 
-    // Create two sliced parts
+    // Calculate slice angle based on velocity
+    const sliceAngle = Math.atan2(this.velocityY, this.velocityX);
+
+    // Create two sliced parts with proper tangent separation
     this.sliceParts = [
       {
         x: this.x,
         y: this.y,
-        vx: this.velocityX - 1,
-        vy: this.velocityY,
-        rot: this.rotation
+        vx: this.velocityX - Math.cos(sliceAngle) * 2,
+        vy: this.velocityY - Math.sin(sliceAngle) * 2,
+        rot: this.rotation,
+        sliceAngle: sliceAngle
       },
       {
         x: this.x,
         y: this.y,
-        vx: this.velocityX + 1,
-        vy: this.velocityY,
-        rot: this.rotation
+        vx: this.velocityX + Math.cos(sliceAngle) * 2,
+        vy: this.velocityY + Math.sin(sliceAngle) * 2,
+        rot: this.rotation,
+        sliceAngle: sliceAngle
       }
     ];
   }
@@ -154,24 +159,33 @@ export class Fruit {
         ctx.translate(part.x, part.y);
         ctx.rotate(part.rot);
 
-        // Create circular clipping path
+        // Create clipping path for the sliced part
         ctx.beginPath();
-        ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+
+        // Calculate the slice angle
+        const sliceAngle = part.sliceAngle;
+
+        // Draw the partial circle
+        if (i === 0) {
+          // First half: from slice angle to slice angle + 180 degrees
+          ctx.arc(0, 0, this.radius, sliceAngle, sliceAngle + Math.PI);
+        } else {
+          // Second half: from slice angle + 180 degrees to slice angle + 360 degrees
+          ctx.arc(0, 0, this.radius, sliceAngle + Math.PI, sliceAngle + Math.PI * 2);
+        }
+
+        // Add the slice line
+        ctx.lineTo(0, 0);
+        ctx.closePath();
         ctx.clip();
 
-        // Draw half of the image for each slice part
+        // Draw the image
         const size = this.radius * 2;
-        if (i === 0) {
-          ctx.drawImage(this.image,
-            0, 0, this.image.width, this.image.height / 2, // Source: top half
-            -this.radius, -this.radius, size, size // Destination
-          );
-        } else {
-          ctx.drawImage(this.image,
-            0, this.image.height / 2, this.image.width, this.image.height / 2, // Source: bottom half
-            -this.radius, -this.radius, size, size // Destination
-          );
-        }
+        ctx.drawImage(
+          this.image,
+          -this.radius, -this.radius,
+          size, size
+        );
 
         ctx.restore();
       }
@@ -189,9 +203,10 @@ export class Fruit {
     ctx.clip();
 
     const size = this.radius * 2;
-    ctx.drawImage(this.image,
-      -this.radius, -this.radius, // Position
-      size, size // Size
+    ctx.drawImage(
+      this.image,
+      -this.radius, -this.radius,
+      size, size
     );
 
     ctx.restore();
