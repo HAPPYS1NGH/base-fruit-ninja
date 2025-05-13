@@ -10,11 +10,6 @@ export type FruitNinjaScore = {
 };
 
 export async function saveHighScore(score: number, fid: number, username: string, pfpUrl: string): Promise<boolean> {
-    console.log("Saving high score");
-    console.log("Score", score);
-    console.log("FID", fid);
-    console.log("Username", username);
-    console.log("PFP URL", pfpUrl);
     try {
         // First get the current score
         const { data: currentData } = await supabase
@@ -23,20 +18,33 @@ export async function saveHighScore(score: number, fid: number, username: string
             .eq('fid', fid)
             .single();
 
-        console.log("currentData", currentData);
+        if (!currentData) {
+            // No existing score, insert new record
+            const { error: insertError } = await supabase
+                .from('fruit_ninja_scores')
+                .insert({
+                    score,
+                    fid,
+                    username,
+                    pfp_url: pfpUrl
+                });
 
-        // Only update if there's no existing score or if the new score is higher
-        if (!currentData || score > currentData.score) {
-            console.log("Updating score in DB");
-
-            const { error } = await supabase
+            if (insertError) throw insertError;
+        } else if (score > currentData.score) {
+            // Update only if new score is higher
+            const { error: updateError } = await supabase
                 .from('fruit_ninja_scores')
                 .update({
                     score,
+                    username,
+                    pfp_url: pfpUrl,
+                    updated_at: new Date().toISOString()
                 })
                 .eq('fid', fid);
-            if (error) throw error;
+
+            if (updateError) throw updateError;
         }
+
         return true;
     } catch (error) {
         console.error('Error saving high score:', error);

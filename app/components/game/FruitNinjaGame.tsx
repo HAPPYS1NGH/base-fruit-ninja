@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { Fruit, FRUITS, initializeFruitsWithFollowers } from "./Fruit";
 import { Blade } from "./Blade";
 import { saveHighScore, getPlayerBestScore } from '@/lib/supabase/db';
+import Link from "next/link";
 
 // Game constants
 const INITIAL_SPAWN_RATE = 1000; // ms
@@ -437,11 +438,20 @@ export default function FruitNinjaGame() {
             <p className="text-xl font-bold">Score: {score}</p>
             <p className="text-sm">High Score: {highScore}</p>
           </div>
-          {gameStarted && (
-            <div className="bg-white text-blue-600 px-3 py-1 rounded-full font-bold">
-              {timeLeft}s
-            </div>
-          )}
+          <div className="flex items-center gap-4">
+            {gameStarted && (
+              <div className="bg-white text-blue-600 px-3 py-1 rounded-full font-bold">
+                {timeLeft}s
+              </div>
+            )}
+            <Link 
+              href="/leaderboard"
+              className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-full transition-all flex items-center gap-2"
+            >
+              <span>🏆</span>
+              <span>Leaderboard</span>
+            </Link>
+          </div>
         </div>
       </div>
       
