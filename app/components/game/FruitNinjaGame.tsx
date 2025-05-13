@@ -1,16 +1,18 @@
 "use client";
-
+import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Fruit, FRUITS, initializeFruitsWithFollowers } from "./Fruit";
 import { Blade } from "./Blade";
+import { saveHighScore, getPlayerBestScore } from '@/lib/supabase/db';
 
 // Game constants
 const INITIAL_SPAWN_RATE = 1000; // ms
 const MIN_SPAWN_RATE = 600; // ms
 const SPAWN_RATE_DECREASE = 5; // ms
-const GAME_DURATION = 60000; // 60 seconds
+const GAME_DURATION = 10000; // 60 seconds
 
 export default function FruitNinjaGame() {
+  const { context } = useMiniKit();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [score, setScore] = useState(0);
   const [gameOver, setGameOver] = useState(false);
@@ -25,6 +27,8 @@ export default function FruitNinjaGame() {
   const comboRef = useRef(0);
   const lastSliceTimeRef = useRef(0);
   const gameStartTimeRef = useRef(0);
+  const [followerScores, setFollowerScores] = useState<{[key: string]: number}>({});
+  const [isHighScore, setIsHighScore] = useState(false);
   
   // Game loop function defined using useRef to avoid dependency issues
   const gameLoopRef = useRef<((timestamp: number) => void) | null>(null);
@@ -32,31 +36,53 @@ export default function FruitNinjaGame() {
   // Initialize fruits with followers
   useEffect(() => {
     const initializeGame = async () => {
-      // Replace this with the actual FID you want to use
-      const targetFid = 429919; // Example FID
-      await initializeFruitsWithFollowers(targetFid);
+      if(context) {
+        const targetFid = context.user.fid;
+        await initializeFruitsWithFollowers(targetFid);
+        // Get player's best score from DB
+        const bestScore = await getPlayerBestScore(targetFid);
+        setHighScore(bestScore);
+      }
     };
     
     initializeGame();
-  }, []);
+  }, [context]);
   
   // End game
-  const endGame = useCallback(() => {
+  const endGame = useCallback(async () => {
     console.log("Game over");
     setGameOver(true);
     setGameStarted(false);
-    
-    // Update high score
-    if (score > highScore) {
-      setHighScore(score);
-      localStorage.setItem('fruitNinjaHighScore', score.toString());
+    // For the time being, use a hardcoded FID and other details
+    if (context && score > 0) {
+      try {
+        // Save score to DB
+        console.log("Saving score to DB");
+        
+        const success = await saveHighScore(
+          score,
+          context.user.fid,
+          context.user.username || 'Unknown',
+          context.user.pfpUrl || ''
+        );
+        console.log("Score saved to DB");
+        console.log("Success", success);
+        
+        // Update high score if needed
+        if (score > highScore) {
+          setHighScore(score);
+          setIsHighScore(true);
+        }
+      } catch (error) {
+        console.error('Error saving score:', error);
+      }
     }
     
     if (animationFrameRef.current) {
       cancelAnimationFrame(animationFrameRef.current);
       animationFrameRef.current = null;
     }
-  }, [score, highScore]);
+  }, [score, highScore, context]);
   
   // Check collision with blade
   const checkSlice = useCallback((x: number, y: number) => {
@@ -73,7 +99,6 @@ export default function FruitNinjaGame() {
           
           // Check if it's a bomb
           if (fruit.name === "bomb") {
-            // Game over if bomb is sliced
             endGame();
             return;
           }
@@ -90,6 +115,12 @@ export default function FruitNinjaGame() {
           const pointsToAdd = fruit.points * Math.min(5, comboRef.current);
           setScore((prevScore) => prevScore + pointsToAdd);
           
+          // Track individual follower scores
+          setFollowerScores(prev => ({
+            ...prev,
+            [fruit.name]: (prev[fruit.name] || 0) + pointsToAdd
+          }));
+          
           lastSliceTimeRef.current = now;
         }
       }
@@ -102,8 +133,10 @@ export default function FruitNinjaGame() {
     if (canvasRef.current) {
       // Reset game state
       setScore(0);
+      setFollowerScores({});
       setGameOver(false);
       setSpawnRate(INITIAL_SPAWN_RATE);
+      setIsHighScore(false);
       fruitsRef.current = [];
       comboRef.current = 0;
       lastSliceTimeRef.current = 0;
@@ -365,6 +398,37 @@ export default function FruitNinjaGame() {
     };
   }, [adjustCanvasSize, gameStarted, gameOver, checkSlice, spawnRate]);
 
+  // Function to share score to feed
+  const shareToFeed = async () => {
+    try {
+      const response = await fetch('/api/notify', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: `🎮 Just scored ${score} in Fruit Ninja!\n\nTop Slices:\n${
+            Object.entries(followerScores)
+              .sort(([,a], [,b]) => b - a)
+              .slice(0, 3)
+              .map(([name, score]) => `@${name}: ${score}`)
+              .join('\n')
+          }\n\nCan you beat my score? Play now! 🍉⚔️`,
+          title: "New Fruit Ninja High Score!"
+        }),
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to share score');
+      }
+      
+      alert('Score shared to feed!');
+    } catch (error) {
+      console.error('Error sharing score:', error);
+      alert('Failed to share score. Please try again.');
+    }
+  };
+
   return (
     <div className="w-full h-full flex flex-col items-center">
       <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 w-full rounded-lg shadow-lg mb-4">
@@ -406,14 +470,59 @@ export default function FruitNinjaGame() {
         {gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 rounded-lg">
             <h2 className="text-4xl font-bold text-white mb-4">Game Over</h2>
-            <p className="text-2xl text-white mb-2">Score: {score}</p>
-            <p className="text-lg text-white mb-8">High Score: {highScore}</p>
-            <button
-              className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full text-xl font-bold shadow-lg hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all"
-              onClick={startGame}
-            >
-              Play Again
-            </button>
+            <p className="text-2xl text-white mb-2">Total Score: {score}</p>
+            {isHighScore && (
+              <p className="text-xl text-yellow-400 mb-4">🏆 New High Score! 🏆</p>
+            )}
+            
+            {/* Top 3 Followers Scores */}
+            <div className="bg-white bg-opacity-10 rounded-lg p-4 mb-6 w-80">
+              <h3 className="text-xl text-white mb-3 text-center">Top Slices</h3>
+              {Object.entries(followerScores)
+                .sort(([,a], [,b]) => b - a)
+                .slice(0, 3)
+                .map(([name, score], index) => {
+                  const fruit = FRUITS.find(f => f.name === name);
+                  return (
+                    <div key={name} className="flex items-center justify-between mb-2 last:mb-0">
+                      <div className="flex items-center">
+                        <span className="text-white mr-2">{index + 1}.</span>
+                        {fruit && (
+                          <img 
+                            src={fruit.image} 
+                            alt={name}
+                            className="w-8 h-8 rounded-full mr-2"
+                          />
+                        )}
+                        <span className="text-white">@{name}</span>
+                      </div>
+                      <span className="text-white font-bold">{score}</span>
+                    </div>
+                  );
+                })
+              }
+            </div>
+
+            <div className="flex flex-col gap-3">
+              <button
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full text-xl font-bold shadow-lg hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all"
+                onClick={startGame}
+              >
+                Play Again
+              </button>
+              
+              {isHighScore && (
+                <button
+                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 rounded-full text-xl font-bold shadow-lg hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all flex items-center justify-center gap-2"
+                  onClick={shareToFeed}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                  </svg>
+                  Share High Score
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>

@@ -1,5 +1,5 @@
 // Game constants
-export const GRAVITY = 0.2; // Reduced gravity from 0.3
+export const GRAVITY = 0.18; // Reduced gravity from 0.2
 
 // Import the followers function
 import { getFollowersByAffinity } from '@/app/actions/followers';
@@ -73,18 +73,18 @@ export class Fruit {
     this.image = new Image();
     this.image.src = type.image;
 
-    // Adjust velocity for balanced arc
-    const minSpeed = 15;
-    const maxSpeed = 18;
+    // Adjust velocity for more controlled arc
+    const minSpeed = 13; // Reduced from 15
+    const maxSpeed = 17; // Reduced from 18
 
     // 10% chance for a high throw
     const isHighThrow = Math.random() < 0.1;
     const speed = isHighThrow
-      ? maxSpeed // Slightly reduced boost for high throws
+      ? maxSpeed
       : Math.random() * (maxSpeed - minSpeed) + minSpeed;
 
-    // Steeper angle for high throws
-    const angleSpread = isHighThrow ? 0.15 : 0.52; // Narrower angle for high throws
+    // Wider angle for more horizontal movement
+    const angleSpread = isHighThrow ? 0.2 : 0.6;
     const angle = Math.PI / 2 + (Math.random() * angleSpread - angleSpread / 2);
 
     // Calculate velocities
