@@ -1,5 +1,5 @@
 'use server'
-
+import { FollowerUser } from "@/types";
 interface Follower {
     username: string;
     fid: number;
@@ -31,8 +31,7 @@ export async function getFollowersByAffinity(fid: number): Promise<Follower[]> {
         console.log(data.users);
         console.log(data.users[0]);
 
-        // Transform the response to match our Follower interface
-        return data.users.map((user: any) => ({
+        return data.users.map((user: FollowerUser) => ({
             username: user.user.username,
             fid: user.user.fid,
             pfp_url: user.user.pfp_url

@@ -19,7 +19,7 @@ export async function initializeFruitsWithFollowers(fid: number) {
       const selectedFollowers = followers.slice(0, 5);
 
 
-      selectedFollowers.forEach((follower, index) => {
+      selectedFollowers.forEach((follower) => {
         FRUITS.push({
           name: follower.username,
           color: "#ff0000",
