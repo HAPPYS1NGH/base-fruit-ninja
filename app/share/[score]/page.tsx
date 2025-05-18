@@ -1,17 +1,17 @@
 import { Metadata } from 'next';
 
 // Helper to build the OG image URL for the meta tag
-function getOgImageUrl(score: string, victims: string) {
+function getOgImageUrl(score: string) {
   // You should implement a real OG image endpoint for production!
   // For now, just use the same share page with a special param
-  return `${process.env.NEXT_PUBLIC_URL}/api/og/revenge?score=${score}&victims=${encodeURIComponent(victims)}`;
+  return `${process.env.NEXT_PUBLIC_URL}/api/og/score?score=${score}}`;
 }
 
 // Server-side metadata for Farcaster frame embed
-export async function generateMetadata({ params, searchParams }: { params: { score: string }, searchParams: { victims: string } }): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
   const score = params.score;
-  const victims = searchParams?.victims || '[]';
-  const imageUrl = getOgImageUrl(score, victims);
+  // const victims = searchParams?.victims || '[]';
+  const imageUrl = getOgImageUrl(score);
 
   // See: https://miniapps.farcaster.xyz/docs/guides/sharing
   const frameMeta = {
@@ -42,7 +42,7 @@ export async function generateMetadata({ params, searchParams }: { params: { sco
 export default function FramePage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
-      <h1 className="text-2xl font-bold mb-4">Fruit Ninja Revenge</h1>
+      <h1 className="text-2xl font-bold mb-4">Zora Collage Frame</h1>
        
       <p className="mt-4 text-gray-400">To see this frame, share it on Farcaster.</p>
     </main>

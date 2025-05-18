@@ -401,7 +401,7 @@ export default function FruitNinjaGame() {
         });
 
       // Create the share URL with victims data
-      const shareUrl = `${process.env.NEXT_PUBLIC_URL}/share/${score}?victims=${encodeURIComponent(JSON.stringify(topVictims))}`;
+      const shareUrl = `${process.env.NEXT_PUBLIC_URL}/share/${score}`;
       console.log("Share URL:", shareUrl);
 
       // Create the cast text with mentions
@@ -470,44 +470,46 @@ export default function FruitNinjaGame() {
         )}
         
         {gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 rounded-lg">
-            <h2 className="text-4xl font-bold text-white mb-4">Game Over</h2>
-            <p className="text-2xl text-white mb-2">Total Score: {score}</p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 rounded-lg p-4 overflow-y-auto">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Game Over</h2>
+            <p className="text-xl md:text-2xl text-white mb-2">Total Score: {score}</p>
             {isHighScore && (
-              <p className="text-xl text-yellow-400 mb-4">🏆 New High Score! 🏆</p>
+              <p className="text-lg md:text-xl text-yellow-400 mb-2">🏆 New High Score! 🏆</p>
             )}
             
             {/* Top 3 Followers Scores */}
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 mb-6 w-80">
-              <h3 className="text-xl text-white mb-3 text-center">Top Slices</h3>
-              {Object.entries(followerScores)
-                .sort(([,a], [,b]) => b - a)
-                .slice(0, 3)
-                .map(([name, score], index) => {
-                  const fruit = FRUITS.find(f => f.name === name);
-                  return (
-                    <div key={name} className="flex items-center justify-between mb-2 last:mb-0">
-                      <div className="flex items-center">
-                        <span className="text-white mr-2">{index + 1}.</span>
-                        {fruit && (
-                          <img 
-                            src={fruit.image} 
-                            alt={name}
-                            className="w-8 h-8 rounded-full mr-2"
-                          />
-                        )}
-                        <span className="text-white">@{name}</span>
+            <div className="bg-white bg-opacity-10 rounded-lg p-4 mb-4 w-full max-w-sm">
+              <h3 className="text-lg md:text-xl text-white mb-3 text-center">Top Slices</h3>
+              <div className="max-h-48 overflow-y-auto">
+                {Object.entries(followerScores)
+                  .sort(([,a], [,b]) => b - a)
+                  .slice(0, 3)
+                  .map(([name, score], index) => {
+                    const fruit = FRUITS.find(f => f.name === name);
+                    return (
+                      <div key={name} className="flex items-center justify-between mb-2 last:mb-0 p-2 hover:bg-white hover:bg-opacity-5 rounded transition-colors">
+                        <div className="flex items-center min-w-0">
+                          <span className="text-white mr-2">{index + 1}.</span>
+                          {fruit && (
+                            <img 
+                              src={fruit.image} 
+                              alt={name}
+                              className="w-8 h-8 rounded-full mr-2 flex-shrink-0"
+                            />
+                          )}
+                          <span className="text-white truncate">@{name}</span>
+                        </div>
+                        <span className="text-white font-bold ml-2 flex-shrink-0">{score}</span>
                       </div>
-                      <span className="text-white font-bold">{score}</span>
-                    </div>
-                  );
-                })
-              }
+                    );
+                  })
+                }
+              </div>
             </div>
 
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3 w-full max-w-sm">
               <button
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full text-xl font-bold shadow-lg hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all"
+                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full text-lg md:text-xl font-bold shadow-lg hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all"
                 onClick={startGame}
               >
                 Play Again
@@ -515,10 +517,10 @@ export default function FruitNinjaGame() {
               
               {isHighScore && (
                 <button
-                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 rounded-full text-xl font-bold shadow-lg hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all flex items-center justify-center gap-2"
+                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 rounded-full text-lg md:text-xl font-bold shadow-lg hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all flex items-center justify-center gap-2"
                   onClick={shareToFeed}
                 >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
                   </svg>
                   Share High Score
