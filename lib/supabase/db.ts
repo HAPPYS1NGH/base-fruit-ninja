@@ -37,8 +37,7 @@ export async function saveHighScore(score: number, fid: number, username: string
                 .update({
                     score,
                     username,
-                    pfp_url: pfpUrl,
-                    updated_at: new Date().toISOString()
+                    pfp_url: pfpUrl
                 })
                 .eq('fid', fid);
 
