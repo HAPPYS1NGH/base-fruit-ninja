@@ -14,6 +14,7 @@ const config: Config = {
       },
       animation: {
         "fade-out": "1s fadeOut 3s ease-out forwards",
+        "spin-slow": "spin 3s linear infinite",
       },
       keyframes: {
         fadeOut: {
