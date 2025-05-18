@@ -5,6 +5,7 @@ import { Fruit, FRUITS, initializeFruitsWithFollowers } from "./Fruit";
 import { Blade } from "./Blade";
 import { saveHighScore, getPlayerBestScore } from '@/lib/supabase/db';
 import Link from "next/link";
+import { sdk } from '@farcaster/frame-sdk';
 
 // Game constants
 const INITIAL_SPAWN_RATE = 1000; // ms
@@ -402,28 +403,35 @@ export default function FruitNinjaGame() {
   // Function to share score to feed
   const shareToFeed = async () => {
     try {
-      const response = await fetch('/api/notify', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          text: `🎮 Just scored ${score} in Fruit Ninja!\n\nTop Slices:\n${
-            Object.entries(followerScores)
-              .sort(([,a], [,b]) => b - a)
-              .slice(0, 3)
-              .map(([name, score]) => `@${name}: ${score}`)
-              .join('\n')
-          }\n\nCan you beat my score? Play now! 🍉⚔️`,
-          title: "New Fruit Ninja High Score!"
-        }),
+      // Get top 
+      const topVictims = Object.entries(followerScores)
+        .sort(([, a], [, b]) => b - a)
+        .slice(0, 6)
+        .map(([username, score]) => {
+          const fruit = FRUITS.find(f => f.name === username);
+          return {
+            username,
+            score,
+            pfp: fruit?.image || ''
+          };
+        });
+
+      // Create the share URL with victims data
+      const shareUrl = `${process.env.NEXT_PUBLIC_URL}/share/${score}?victims=${encodeURIComponent(JSON.stringify(topVictims))}`;
+      console.log("Share URL:", shareUrl);
+
+      // Create the cast text with mentions
+      const mentions = topVictims.map(v => `@${v.username}`).join(' ');
+      const castText = `🎮 Sliced ${topVictims.length} followers in Fruit Ninja!\n\nScore: ${score.toLocaleString()}\n\n${mentions} - Take your revenge! 🍉⚔️\n\nPlay now: ${shareUrl}`;
+
+      // Use Farcaster Mini Apps SDK to open the cast composer
+      await sdk.actions.composeCast({
+        text: castText,
+        embeds: [shareUrl]
       });
-      
-      if (!response.ok) {
-        throw new Error('Failed to share score');
-      }
-      
-      alert('Score shared to feed!');
+
+      // Optionally, show a message or handle result
+      // alert('Cast composer opened!');
     } catch (error) {
       console.error('Error sharing score:', error);
       alert('Failed to share score. Please try again.');
