@@ -1,5 +1,6 @@
 // Game constants
-export const GRAVITY = 0.18; // Reduced gravity from 0.2
+export const GRAVITY = 0.18; // Increased from 0.12
+export const BASE_FRAME_RATE = 1000 / 100; // 60 FPS as base
 
 // Import the followers function
 import { getFollowersByAffinity } from '@/app/actions/followers';
@@ -74,8 +75,8 @@ export class Fruit {
     this.image.src = type.image;
 
     // Adjust velocity for more controlled arc
-    const minSpeed = 13; // Reduced from 15
-    const maxSpeed = 17; // Reduced from 18
+    const minSpeed = 13; // Increased from 10
+    const maxSpeed = 16; // Increased from 14
 
     // 10% chance for a high throw
     const isHighThrow = Math.random() < 0.1;
@@ -84,7 +85,7 @@ export class Fruit {
       : Math.random() * (maxSpeed - minSpeed) + minSpeed;
 
     // Wider angle for more horizontal movement
-    const angleSpread = isHighThrow ? 0.2 : 0.6;
+    const angleSpread = isHighThrow ? 0.1 : 0.4;
     const angle = Math.PI / 2 + (Math.random() * angleSpread - angleSpread / 2);
 
     // Calculate velocities
@@ -100,24 +101,26 @@ export class Fruit {
     this.sliceParts = [];
   }
 
-  update() {
+  update(deltaTime: number = BASE_FRAME_RATE) {
+    const timeScale = deltaTime / BASE_FRAME_RATE;
+
     if (this.sliced) {
       // Update slice parts with reduced gravity for sliced parts
       for (let i = 0; i < this.sliceParts.length; i++) {
         const part = this.sliceParts[i];
-        part.vy += GRAVITY * 1.5; // Reduced from 2x to 1.5x for sliced parts
-        part.x += part.vx;
-        part.y += part.vy;
-        part.rot += 0.05;
+        part.vy += GRAVITY * 1.5 * timeScale;
+        part.x += part.vx * timeScale;
+        part.y += part.vy * timeScale;
+        part.rot += 0.05 * timeScale;
       }
       return;
     }
 
     // Further reduced gravity effect for even smoother arcs
-    this.velocityY += GRAVITY * 0.85; // Reduced from 0.95
-    this.x += this.velocityX;
-    this.y += this.velocityY;
-    this.rotation += this.rotationSpeed;
+    this.velocityY += GRAVITY * 0.85 * timeScale;
+    this.x += this.velocityX * timeScale;
+    this.y += this.velocityY * timeScale;
+    this.rotation += this.rotationSpeed * timeScale;
   }
 
   slice() {

@@ -8,10 +8,11 @@ import Link from "next/link";
 import { sdk } from '@farcaster/frame-sdk';
 
 // Game constants
-const INITIAL_SPAWN_RATE = 1000; // ms
-const MIN_SPAWN_RATE = 600; // ms
-const SPAWN_RATE_DECREASE = 5; // ms
+const INITIAL_SPAWN_RATE = 800; // ms - Decreased from 1000 for more frequent spawns
+// const MIN_SPAWN_RATE = 600; // ms
+// const SPAWN_RATE_DECREASE = 0; // ms
 const GAME_DURATION = 10000; // 60 seconds
+const MAX_FRUITS_PER_SPAWN = 3; // Maximum number of fruits to spawn at once
 
 export default function FruitNinjaGame() {
   const { context } = useMiniKit();
@@ -34,6 +35,7 @@ export default function FruitNinjaGame() {
   
   // Game loop function defined using useRef to avoid dependency issues
   const gameLoopRef = useRef<((timestamp: number) => void) | null>(null);
+  const lastFrameTimeRef = useRef<number>(0);
   
   // Initialize fruits with followers
   useEffect(() => {
@@ -203,6 +205,10 @@ export default function FruitNinjaGame() {
         return;
       }
       
+      // Calculate delta time
+      const deltaTime = lastFrameTimeRef.current ? timestamp - lastFrameTimeRef.current : 0;
+      lastFrameTimeRef.current = timestamp;
+      
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       if (!ctx) return;
@@ -214,8 +220,10 @@ export default function FruitNinjaGame() {
       const elapsedTime = (timestamp - gameStartTimeRef.current) / 1000;
       const newTimeLeft = Math.max(0, Math.ceil(GAME_DURATION / 1000 - elapsedTime));
       
-      // Update time left
-      setTimeLeft(newTimeLeft);
+      // Only update timeLeft state if it has changed
+      if (newTimeLeft !== timeLeft) {
+        setTimeLeft(newTimeLeft);
+      }
       
       if (newTimeLeft === 0) {
         endGame();
@@ -224,71 +232,47 @@ export default function FruitNinjaGame() {
       
       // Spawn fruits
       if (timestamp - lastSpawnTimeRef.current > spawnRate) {
-        console.log("Attempting to spawn fruit:", {
-          currentTime: timestamp,
-          lastSpawnTime: lastSpawnTimeRef.current,
-          timeSinceLastSpawn: timestamp - lastSpawnTimeRef.current,
-          spawnRate
-        });
-
-        const fruitTypeIndex = Math.floor(Math.random() * FRUITS.length);
-        // Limit bomb frequency (only 10% chance)
-        if (FRUITS[fruitTypeIndex].name !== "bomb" || Math.random() < 0.1) {
-          const newFruit = new Fruit(canvas.width, FRUITS[fruitTypeIndex]);
-          fruitsRef.current.push(newFruit);
-          console.log("Spawned fruit:", {
-            type: FRUITS[fruitTypeIndex].name,
-            x: newFruit.x,
-            totalFruits: fruitsRef.current.length
-          });
-        } else {
-          // Try again for a non-bomb
-          const nonBombIndex = Math.floor(Math.random() * (FRUITS.length - 1));
-          const newFruit = new Fruit(canvas.width, FRUITS[nonBombIndex]);
-          fruitsRef.current.push(newFruit);
-          console.log("Spawned non-bomb fruit:", {
-            type: FRUITS[nonBombIndex].name,
-            x: newFruit.x,
-            totalFruits: fruitsRef.current.length
-          });
+        // Randomly decide how many fruits to spawn (1 to MAX_FRUITS_PER_SPAWN)
+        const fruitsToSpawn = Math.floor(Math.random() * MAX_FRUITS_PER_SPAWN) + 1;
+        
+        for (let i = 0; i < fruitsToSpawn; i++) {
+          const fruitTypeIndex = Math.floor(Math.random() * FRUITS.length);
+          // Limit bomb frequency (only 5% chance when spawning multiple)
+          if (FRUITS[fruitTypeIndex].name !== "bomb" || Math.random() < (fruitsToSpawn === 1 ? 0.1 : 0.05)) {
+            const newFruit = new Fruit(canvas.width, FRUITS[fruitTypeIndex]);
+            // Add slight horizontal offset when spawning multiple fruits
+            if (fruitsToSpawn > 1) {
+              newFruit.x += (Math.random() - 0.5) * 100;
+            }
+            fruitsRef.current.push(newFruit);
+          } else {
+            // Try again for a non-bomb
+            const nonBombIndex = Math.floor(Math.random() * (FRUITS.length - 1));
+            const newFruit = new Fruit(canvas.width, FRUITS[nonBombIndex]);
+            if (fruitsToSpawn > 1) {
+              newFruit.x += (Math.random() - 0.5) * 100;
+            }
+            fruitsRef.current.push(newFruit);
+          }
         }
         lastSpawnTimeRef.current = timestamp;
-        // Decrease spawn rate over time for increased difficulty
-        setSpawnRate(prev => Math.max(MIN_SPAWN_RATE, prev - SPAWN_RATE_DECREASE));
       }
       
-      // Update fruits
+      // Update fruits with delta time
       fruitsRef.current.forEach((fruit) => {
-        fruit.update();
+        fruit.update(deltaTime);
       });
       
       // Remove fruits that are out of screen
-      const beforeCount = fruitsRef.current.length;
       fruitsRef.current = fruitsRef.current.filter(
         (fruit) => {
-          // Keep fruit if:
-          // 1. It's still on screen (y < canvas.height + buffer)
-          // 2. It's moving upward (velocityY < 0)
-          // 3. It's sliced and within time window
-          return (
-            fruit.y < canvas.height + 100 || 
-            fruit.velocityY < 0 ||
-            (fruit.sliced && Date.now() - fruit.sliceTime < 1000)
-          );
+          const isVisible = fruit.y < canvas.height + 100 || 
+                          fruit.velocityY < 0;
+          const isRecentlySliced = fruit.sliced && 
+                                 (timestamp - fruit.sliceTime) < 1000;
+          return isVisible || isRecentlySliced;
         }
       );
-      const afterCount = fruitsRef.current.length;
-      if (beforeCount !== afterCount) {
-        console.log("Removed fruits:", {
-          removed: beforeCount - afterCount,
-          remaining: afterCount,
-          fruits: fruitsRef.current.map(f => ({
-            y: f.y,
-            velocityY: f.velocityY,
-            sliced: f.sliced
-          }))
-        });
-      }
       
       // Draw fruits
       fruitsRef.current.forEach((fruit) => {
@@ -304,17 +288,17 @@ export default function FruitNinjaGame() {
     
     // If game is already started, start the animation frame
     if (gameStarted && !gameOver && gameLoopRef.current) {
+      lastFrameTimeRef.current = performance.now();
       animationFrameRef.current = requestAnimationFrame(gameLoopRef.current);
     }
     
     return () => {
-      // Clean up animation frame on unmount or when dependencies change
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
         animationFrameRef.current = null;
       }
     };
-  }, [gameStarted, gameOver, endGame]);
+  }, [gameStarted, gameOver, endGame, timeLeft, spawnRate]);
 
   // Adjust canvas size on mount and on window resize
   const adjustCanvasSize = useCallback(() => {
