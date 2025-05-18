@@ -8,7 +8,7 @@ function getOgImageUrl(score: string) {
 }
 
 // Server-side metadata for Farcaster frame embed
-export async function generateMetadata({ params, searchParams }: any): Promise<Metadata> {
+export async function generateMetadata({ params }: any): Promise<Metadata> {
   const score = params.score;
   // const victims = searchParams?.victims || '[]';
   const imageUrl = getOgImageUrl(score);
@@ -42,7 +42,7 @@ export async function generateMetadata({ params, searchParams }: any): Promise<M
 export default function FramePage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
-      <h1 className="text-2xl font-bold mb-4">Zora Collage Frame</h1>
+      <h1 className="text-2xl font-bold mb-4">Fruiit Ninja</h1>
        
       <p className="mt-4 text-gray-400">To see this frame, share it on Farcaster.</p>
     </main>

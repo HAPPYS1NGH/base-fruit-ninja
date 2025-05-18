@@ -404,9 +404,11 @@ export default function FruitNinjaGame() {
       const shareUrl = `${process.env.NEXT_PUBLIC_URL}/share/${score}`;
       console.log("Share URL:", shareUrl);
 
-      // Create the cast text with mentions
-      const mentions = topVictims.map(v => `@${v.username}`).join(' ');
-      const castText = `🎮 Sliced ${topVictims.length} followers in Fruit Ninja!\n\nScore: ${score.toLocaleString()}\n\n${mentions} - Take your revenge! 🍉⚔️\n\nPlay now: ${shareUrl}`;
+      // Create the cast text with mentions and scores
+      const mentions = topVictims
+        .map(v => `@${v.username} (${v.score.toLocaleString()} pts)`)
+        .join('\n');
+      const castText = `🎮 Sliced ${topVictims.length} victims in Fruit Ninja!\n\nTotal Score: ${score.toLocaleString()}\n\nVictims:\n${mentions}\n\nTake your revenge! 🍉⚔️\n\nPlay now: ${shareUrl}`;
 
       // Use Farcaster Mini Apps SDK to open the cast composer
       await sdk.actions.composeCast({
@@ -515,17 +517,15 @@ export default function FruitNinjaGame() {
                 Play Again
               </button>
               
-              {isHighScore && (
-                <button
-                  className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 rounded-full text-lg md:text-xl font-bold shadow-lg hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all flex items-center justify-center gap-2"
-                  onClick={shareToFeed}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                  </svg>
-                  Share High Score
-                </button>
-              )}
+              <button
+                className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 rounded-full text-lg md:text-xl font-bold shadow-lg hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all flex items-center justify-center gap-2"
+                onClick={shareToFeed}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                </svg>
+                Share Score
+              </button>
             </div>
           </div>
         )}
