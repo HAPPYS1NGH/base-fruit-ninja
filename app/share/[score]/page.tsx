@@ -8,7 +8,7 @@ function getOgImageUrl(score: string) {
 }
 
 // Server-side metadata for Farcaster frame embed
-export async function generateMetadata({ params }: any): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: { score: string } }): Promise<Metadata> {
   const score = params.score;
   // const victims = searchParams?.victims || '[]';
   const imageUrl = getOgImageUrl(score);
