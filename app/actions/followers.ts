@@ -14,7 +14,7 @@ export async function getFollowersByAffinity(fid: number): Promise<Follower[]> {
 
     try {
         const response = await fetch(
-            `https://api.neynar.com/v2/farcaster/following?fid=${fid}&limit=5&sort_type=affinity_score`,
+            `https://api.neynar.com/v2/farcaster/following?fid=${fid}&limit=20&sort_type=affinity_score`,
             {
                 headers: {
                     'api_key': NEYNAR_API_KEY,

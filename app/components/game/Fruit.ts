@@ -12,12 +12,13 @@ export const FRUITS: { name: string; color: string; points: number; radius: numb
 // Function to initialize fruits with follower images
 export async function initializeFruitsWithFollowers(fid: number) {
   try {
-    const followers = await getFollowersByAffinity(fid);
+    const followersByAffinity = await getFollowersByAffinity(fid);
+    const followers = followersByAffinity.sort(() => Math.random() - 0.5).slice(0, 10);
     // Update FRUITS array with follower data
     FRUITS.length = 0; // Clear existing fruits
     if (followers.length > 0) {
       // Ensure we have exactly 5 followers
-      const selectedFollowers = followers.slice(0, 5);
+      const selectedFollowers = followers.slice(0, 10);
 
 
       selectedFollowers.forEach((follower) => {

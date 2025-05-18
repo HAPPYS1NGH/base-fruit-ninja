@@ -11,7 +11,7 @@ import { sdk } from '@farcaster/frame-sdk';
 const INITIAL_SPAWN_RATE = 800; // ms - Decreased from 1000 for more frequent spawns
 // const MIN_SPAWN_RATE = 600; // ms
 // const SPAWN_RATE_DECREASE = 0; // ms
-const GAME_DURATION = 10000; // 60 seconds
+const GAME_DURATION = 30000; // 60 seconds
 const MAX_FRUITS_PER_SPAWN = 3; // Maximum number of fruits to spawn at once
 
 export default function FruitNinjaGame() {
