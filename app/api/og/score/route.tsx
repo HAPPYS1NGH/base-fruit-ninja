@@ -52,7 +52,7 @@ export async function GET(req: NextRequest) {
         fontFamily: 'sans-serif',
         letterSpacing: '-0.03em',
       }}>
-        🍉 FRUIT NINJA
+        ⚔️ FACEBREAKER
       </div>
 
       {/* Score display */}
@@ -71,7 +71,7 @@ export async function GET(req: NextRequest) {
           letterSpacing: '0.1em',
           textShadow: '0 2px 10px rgba(251, 191, 36, 0.3)',
         }}>
-          HIGH SCORE
+          DESTRUCTION SCORE
         </div>
         <div style={{
           color: '#fff',
@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
         textTransform: 'uppercase',
         letterSpacing: '0.05em',
       }}>
-        ⚔️ Can You Beat This? ⚔️
+        ⚔️ Can You Break More? ⚔️
       </div>
 
       {/* Decorative sword slashes */}

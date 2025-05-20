@@ -22,14 +22,14 @@ export async function generateMetadata({ params }: { params: { score: string } }
       action: {
         type: 'launch_frame',
         url: `${process.env.NEXT_PUBLIC_URL}/`, // Launches the game
-        name: 'Fruit Ninja',
+        name: 'Facebreaker',
       },
     },
   };
 
   return {
-    title: 'Take Your Revenge in Fruit Ninja!',
-    description: 'Can you beat your friend\'s score? Take revenge now!',
+    title: 'Can You Break More Faces?',
+    description: 'Challenge your friends in Facebreaker! How many faces can you break?',
     openGraph: {
       images: [imageUrl],
     },
@@ -42,7 +42,7 @@ export async function generateMetadata({ params }: { params: { score: string } }
 export default function FramePage() {
   return (
     <main className="flex flex-col items-center justify-center min-h-screen bg-black text-white p-4">
-      <h1 className="text-2xl font-bold mb-4">Fruiit Ninja</h1>
+      <h1 className="text-2xl   mb-4">Fruiit Ninja</h1>
        
       <p className="mt-4 text-gray-400">To see this frame, share it on Farcaster.</p>
     </main>
