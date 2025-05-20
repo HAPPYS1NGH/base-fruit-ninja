@@ -5,11 +5,18 @@ export type FruitNinjaScore = {
     score: number;
     fid: number;
     username: string;
+    name: string;
     pfp_url: string;
     created_at: string;
 };
 
-export async function saveHighScore(score: number, fid: number, username: string, pfpUrl: string): Promise<boolean> {
+export async function saveHighScore(
+    score: number,
+    fid: number,
+    username: string,
+    pfpUrl: string,
+    name: string = username
+): Promise<boolean> {
     try {
         // First get the current score
         const { data: currentData } = await supabase
@@ -26,6 +33,7 @@ export async function saveHighScore(score: number, fid: number, username: string
                     score,
                     fid,
                     username,
+                    name,
                     pfp_url: pfpUrl
                 });
 
@@ -37,6 +45,7 @@ export async function saveHighScore(score: number, fid: number, username: string
                 .update({
                     score,
                     username,
+                    name,
                     pfp_url: pfpUrl
                 })
                 .eq('fid', fid);

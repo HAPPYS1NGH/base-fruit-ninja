@@ -67,7 +67,7 @@ export class Fruit {
   constructor(canvasWidth: number, type: typeof FRUITS[0]) {
     // Position fruit at the bottom of the screen
     this.x = Math.random() * (canvasWidth - 100) + 50;
-    this.y = window.innerHeight + 50; // Start slightly below screen
+    this.y = window.innerHeight + 100; // Start further below screen
     this.radius = type.radius;
     this.color = type.color;
 
@@ -76,8 +76,8 @@ export class Fruit {
     this.image.src = type.image;
 
     // Adjust velocity for more controlled arc
-    const minSpeed = 13; // Increased from 10
-    const maxSpeed = 16; // Increased from 14
+    const minSpeed = 14; // Increased from 10
+    const maxSpeed = 17; // Increased from 14
 
     // 10% chance for a high throw
     const isHighThrow = Math.random() < 0.1;
@@ -86,7 +86,7 @@ export class Fruit {
       : Math.random() * (maxSpeed - minSpeed) + minSpeed;
 
     // Wider angle for more horizontal movement
-    const angleSpread = isHighThrow ? 0.1 : 0.4;
+    const angleSpread = isHighThrow ? 0.1 : 0.3;
     const angle = Math.PI / 2 + (Math.random() * angleSpread - angleSpread / 2);
 
     // Calculate velocities
