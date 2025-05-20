@@ -12,6 +12,10 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      fontFamily: {
+        gotens: ['var(--font-gotens)'],
+        inter: ['var(--font-inter)'],
+      },
       animation: {
         "fade-out": "1s fadeOut 3s ease-out forwards",
         "spin-slow": "spin 3s linear infinite",

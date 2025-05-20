@@ -17,9 +17,16 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: "Geist", sans-serif;
+  font-family: var(--font-gotens), sans-serif !important;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
   font-size: 80%;
+  /* Make it less thin */
+
+}
+
+/* Force Gotens font on all text elements */
+*, h1, h2, h3, h4, h5, h6, p, span, div, button, input, textarea {
+  font-family: var(--font-gotens), sans-serif ;
 }
