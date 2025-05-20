@@ -132,6 +132,16 @@ export default function FruitNinjaGame() {
     });
   }, [gameStarted, gameOver, endGame]);
   
+  // Adjust canvas size on mount and on window resize
+  const adjustCanvasSize = useCallback(() => {
+    if (canvasRef.current) {
+      const canvas = canvasRef.current;
+      canvas.width = canvas.clientWidth;
+      canvas.height = window.innerHeight - canvas.getBoundingClientRect().top - 20; // Set height to fill available space
+      console.log("Canvas size adjusted:", canvas.width, canvas.height);
+    }
+  }, []);
+  
   // Initialize game
   const startGame = useCallback(() => {
     console.log("Starting game");
@@ -151,10 +161,9 @@ export default function FruitNinjaGame() {
       // Reset timer
       setTimeLeft(GAME_DURATION / 1000);
       
-      // Adjust canvas size
+      // Adjust canvas size - use the adjustCanvasSize function
+      adjustCanvasSize();
       const canvas = canvasRef.current;
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
       console.log("Canvas size:", canvas.width, canvas.height);
 
       // Load high score from localStorage
@@ -194,7 +203,7 @@ export default function FruitNinjaGame() {
         console.error("Game loop not defined!");
       }
     }
-  }, []);
+  }, [adjustCanvasSize]);
 
   // Define game loop using useEffect and store in ref
   useEffect(() => {
@@ -300,16 +309,6 @@ export default function FruitNinjaGame() {
       }
     };
   }, [gameStarted, gameOver, endGame, timeLeft, spawnRate]);
-
-  // Adjust canvas size on mount and on window resize
-  const adjustCanvasSize = useCallback(() => {
-    if (canvasRef.current) {
-      const canvas = canvasRef.current;
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
-      console.log("Canvas size adjusted:", canvas.width, canvas.height);
-    }
-  }, []);
 
   // Handle canvas setup, game loop, and event listeners
   useEffect(() => {
@@ -433,17 +432,24 @@ export default function FruitNinjaGame() {
             <p className="text-2xl ">Score: {score}</p>
             <p className="text-lg">High Score: {highScore}</p>
           </div>
-          <Link 
-            href="/leaderboard"
-            className="bg-white text-orange-500 px-4 py-2 rounded-full transition-all flex items-center gap-2"
-          >
-            <Image src="/trophy.png" alt="Trophy" width={17} height={17} />
-            <span>Leaderboard</span>
-          </Link>
+          
+          {gameStarted ? (
+            <div className="bg-white text-orange-500 px-6 py-2 rounded-full font-bold text-xl">
+              {timeLeft}s
+            </div>
+          ) : (
+            <Link 
+              href="/leaderboard"
+              className="bg-white text-orange-500 px-4 py-2 rounded-full transition-all flex items-center gap-2"
+            >
+              <Image src="/trophy.png" alt="Trophy" width={17} height={17} />
+              <span>Leaderboard</span>
+            </Link>
+          )}
         </div>
       </div>
       
-      <div className="relative w-full" style={{ height: "60vh" }}>
+      <div className="relative w-full flex-grow flex" style={{ minHeight: "calc(100vh - 120px)" }}>
         <canvas
           ref={canvasRef}
           className="w-full h-full rounded-lg shadow-inner"
@@ -507,14 +513,15 @@ export default function FruitNinjaGame() {
 
             <div className="flex flex-col gap-3 w-full max-w-sm">
               <button
-                className="bg-orange-500 text-white px-8 py-3 rounded-full text-lg md:text-xl   shadow-lg hover:bg-orange-600 transition-all"
+                className="bg-white text-orange-500 px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg hover:text-orange-600 transition-all mx-4"
                 onClick={startGame}
               >
                 Play Again
               </button>
               
               <button
-                className="bg-green-500 text-white px-8 py-3 rounded-full text-lg md:text-xl   shadow-lg hover:bg-green-600 transition-all flex items-center justify-center gap-2"
+                className="bg-orange-500 text-white px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg 
+                 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 onClick={shareToFeed}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
