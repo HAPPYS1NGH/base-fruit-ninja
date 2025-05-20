@@ -11,6 +11,19 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        tangerine: {
+          DEFAULT: "#FF8011",
+          50: "#FFF1E8",
+          100: "#FFE2D1",
+          200: "#FFC6A3",
+          300: "#FFAA76",
+          400: "#FF9544",
+          500: "#FF8011", // Base color
+          600: "#DD6700",
+          700: "#AB5000",
+          800: "#783800",
+          900: "#462100",
+        },
       },
       fontFamily: {
         gotens: ['var(--font-gotens)'],

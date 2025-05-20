@@ -44,7 +44,7 @@ export default function LeaderboardPage() {
   return (
     <div className="min-h-screen w-full max-w-xl mx-auto p-4 pt-0 flex flex-col">
       {/* Header Section */}
-      <div className="bg-orange-500 rounded-xl p-4 mx-4 rounded-t-none mb-6 shadow-lg text-center">
+      <div className="bg-tangerine-500 rounded-xl p-4 mx-4 rounded-t-none mb-6 shadow-lg text-center">
         <h1 className="text-4xl text-white">Leaderboard</h1>
       </div>
 
@@ -53,7 +53,7 @@ export default function LeaderboardPage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
             <div className="relative w-16 h-16">
-              <div className="absolute inset-0 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="absolute inset-0 border-4 border-tangerine-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
             <p className="text-white animate-pulse">Loading scores...</p>
           </div>
@@ -91,7 +91,7 @@ export default function LeaderboardPage() {
                   </div>
 
                   {/* Score */}
-                  <div className="flex-shrink-0 text-5xl text-orange-500">
+                  <div className="flex-shrink-0 text-5xl text-tangerine-500">
                     {score.score.toLocaleString()}
                   </div>
                 </div>
@@ -106,7 +106,7 @@ export default function LeaderboardPage() {
                 </p>
                 <Link 
                   href="/"
-                  className="inline-flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-full font-bold hover:bg-orange-600 transition-all"
+                  className="inline-flex items-center gap-2 bg-tangerine-500 text-white px-6 py-3 rounded-full font-bold hover:bg-tangerine-600 transition-all"
                 >
                   <span>🎮</span>
                   <span>Play Now</span>
@@ -120,7 +120,7 @@ export default function LeaderboardPage() {
       {/* Back button */}
       <Link 
         href="/"
-        className="bg-orange-500 text-white font-bold px-6 py-3 rounded-full mt-6 text-center hover:bg-orange-600 transition-all"
+        className="bg-tangerine-500 text-white font-bold px-6 py-3 rounded-full mt-6 text-center hover:bg-tangerine-600 transition-all"
       >
         Back to Game
       </Link>

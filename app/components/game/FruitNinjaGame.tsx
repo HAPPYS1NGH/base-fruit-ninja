@@ -426,7 +426,7 @@ export default function FruitNinjaGame() {
 
   return (
     <div className="w-full h-full flex flex-col items-center">
-      <div className="bg-orange-500 p-4 w-full rounded-lg rounded-t-none shadow-lg mb-4">
+      <div className="bg-tangerine-500 p-4 w-full rounded-lg rounded-t-none shadow-lg mb-4">
         <div className="flex justify-between items-center text-white">
           <div>
             <p className="text-2xl ">Score: {score}</p>
@@ -434,13 +434,13 @@ export default function FruitNinjaGame() {
           </div>
           
           {gameStarted ? (
-            <div className="bg-white text-orange-500 px-6 py-2 rounded-full font-bold text-xl">
+            <div className="bg-white text-tangerine-500 px-6 py-2 rounded-full font-bold text-xl">
               {timeLeft}s
             </div>
           ) : (
             <Link 
               href="/leaderboard"
-              className="bg-white text-orange-500 px-4 py-2 rounded-full transition-all flex items-center gap-2"
+              className="bg-white text-tangerine-500 px-4 py-2 rounded-full transition-all flex items-center gap-2"
             >
               <Image src="/trophy.png" alt="Trophy" width={17} height={17} />
               <span>Leaderboard</span>
@@ -457,7 +457,7 @@ export default function FruitNinjaGame() {
         
         {!gameStarted && !gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="bg-orange-500 text-white text-center p-6 rounded-lg shadow-lg mb-8 max-w-xs">
+            <div className="bg-tangerine-500 text-white text-center p-6 rounded-lg shadow-lg mb-8 max-w-xs">
               <h2 className="text-4xl mb-2">Face Breaker</h2>
               <p className="text-lg font-inter">
               Slice your followers!<br />
@@ -465,7 +465,7 @@ export default function FruitNinjaGame() {
               </p>
             </div>
             <button
-              className="bg-white text-orange-500 px-12 py-4 rounded-lg text-3xl  shadow-lg hover:bg-gray-100 transition-all text-center"
+              className="bg-white text-tangerine-500 px-12 py-4 rounded-lg text-3xl shadow-lg hover:bg-gray-100 transition-all text-center"
               onClick={startGame}
             >
               Start Game
@@ -475,7 +475,7 @@ export default function FruitNinjaGame() {
         
         {gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 rounded-lg p-4 overflow-y-auto">
-            <h2 className="text-3xl md:text-4xl  text-white mb-2">Game Over</h2>
+            <h2 className="text-3xl md:text-4xl text-white mb-2">Game Over</h2>
             <p className="text-xl md:text-2xl text-white mb-2">Total Score: {score}</p>
             {isHighScore && (
               <p className="text-lg md:text-xl text-yellow-400 mb-2">🏆 New High Score! 🏆</p>
@@ -503,7 +503,7 @@ export default function FruitNinjaGame() {
                           )}
                           <span className="text-white truncate">@{name}</span>
                         </div>
-                        <span className="text-white   ml-2 flex-shrink-0">{score}</span>
+                        <span className="text-white ml-2 flex-shrink-0">{score}</span>
                       </div>
                     );
                   })
@@ -513,15 +513,15 @@ export default function FruitNinjaGame() {
 
             <div className="flex flex-col gap-3 w-full max-w-sm">
               <button
-                className="bg-white text-orange-500 px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg hover:text-orange-600 transition-all mx-4"
+                className="bg-white text-tangerine-500 px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg hover:text-tangerine-600 transition-all mx-4"
                 onClick={startGame}
               >
                 Play Again
               </button>
               
               <button
-                className="bg-orange-500 text-white px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg 
-                 hover:bg-orange-600 transition-all flex items-center justify-center gap-2 cursor-pointer"
+                className="bg-tangerine-500 text-white px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg 
+                  hover:bg-tangerine-600 transition-all flex items-center justify-center gap-2 cursor-pointer"
                 onClick={shareToFeed}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
