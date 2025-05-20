@@ -67,7 +67,8 @@ export default function FruitNinjaGame() {
           score,
           context.user.fid,
           context.user.username || 'Unknown',
-          context.user.pfpUrl || ''
+          context.user.pfpUrl || '',
+          context.user.displayName || context.user.username || 'Unknown' // Use displayName as name if available
         );
         console.log("Score saved to DB");
         console.log("Success", success);
