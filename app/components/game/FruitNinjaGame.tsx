@@ -6,7 +6,7 @@ import { Blade } from "./Blade";
 import { saveHighScore, getPlayerBestScore } from '@/lib/supabase/db';
 import Link from "next/link";
 import { sdk } from '@farcaster/frame-sdk';
-
+import Image from "next/image";
 // Game constants
 const INITIAL_SPAWN_RATE = 800; // ms - Decreased from 1000 for more frequent spawns
 // const MIN_SPAWN_RATE = 600; // ms
@@ -408,7 +408,7 @@ export default function FruitNinjaGame() {
       const mentions = topVictims
         .map(v => `@${v.username} (${v.score.toLocaleString()} pts)`)
         .join('\n');
-      const castText = `🎮 Sliced ${topVictims.length} victims in Fruit Ninja!\n\nTotal Score: ${score.toLocaleString()}\n\nVictims:\n${mentions}\n\nTake your revenge! 🍉⚔️\n\nPlay now: ${shareUrl}`;
+      const castText = `⚔️ Destroyed ${topVictims.length} faces in Facebreaker!\n\nTotal Score: ${score.toLocaleString()}\n\nVictims:\n${mentions}\n\nCan you break more? 🔥\n\nPlay now: ${shareUrl}`;
 
       // Use Farcaster Mini Apps SDK to open the cast composer
       await sdk.actions.composeCast({
@@ -426,44 +426,39 @@ export default function FruitNinjaGame() {
 
   return (
     <div className="w-full h-full flex flex-col items-center">
-      <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-4 w-full rounded-lg shadow-lg mb-4">
+      <div className="bg-orange-500 p-4 w-full rounded-lg rounded-t-none shadow-lg mb-4">
         <div className="flex justify-between items-center text-white">
           <div>
-            <p className="text-xl font-bold">Score: {score}</p>
-            <p className="text-sm">High Score: {highScore}</p>
+            <p className="text-2xl ">Score: {score}</p>
+            <p className="text-lg">High Score: {highScore}</p>
           </div>
-          <div className="flex items-center gap-4">
-            {gameStarted && (
-              <div className="bg-white text-blue-600 px-3 py-1 rounded-full font-bold">
-                {timeLeft}s
-              </div>
-            )}
-            <Link 
-              href="/leaderboard"
-              className="bg-white bg-opacity-20 hover:bg-opacity-30 px-4 py-2 rounded-full transition-all flex items-center gap-2"
-            >
-              <span>🏆</span>
-              <span>Leaderboard</span>
-            </Link>
-          </div>
+          <Link 
+            href="/leaderboard"
+            className="bg-white text-orange-500 px-4 py-2 rounded-full transition-all flex items-center gap-2"
+          >
+            <Image src="/trophy.png" alt="Trophy" width={17} height={17} />
+            <span>Leaderboard</span>
+          </Link>
         </div>
       </div>
       
       <div className="relative w-full" style={{ height: "60vh" }}>
         <canvas
           ref={canvasRef}
-          className="w-full h-full bg-gradient-to-b from-blue-900 to-black rounded-lg shadow-inner"
+          className="w-full h-full rounded-lg shadow-inner"
         />
         
         {!gameStarted && !gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 rounded-lg">
-            <h2 className="text-4xl font-bold text-white mb-6">Fruit Ninja</h2>
-            <p className="text-white mb-8 text-center px-4">
-              Slice fruits with your finger! <br />
-              Avoid the bombs!
-            </p>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <div className="bg-orange-500 text-white text-center p-6 rounded-lg shadow-lg mb-8 max-w-xs">
+              <h2 className="text-4xl mb-2">Face Breaker</h2>
+              <p className="text-lg font-inter">
+              Slice your followers!<br />
+              Get combos for extra points 
+              </p>
+            </div>
             <button
-              className="bg-gradient-to-r from-green-500 to-green-700 text-white px-8 py-3 rounded-full text-xl font-bold shadow-lg hover:from-green-600 hover:to-green-800 transform hover:scale-105 transition-all"
+              className="bg-white text-orange-500 px-12 py-4 rounded-lg text-3xl  shadow-lg hover:bg-gray-100 transition-all text-center"
               onClick={startGame}
             >
               Start Game
@@ -473,7 +468,7 @@ export default function FruitNinjaGame() {
         
         {gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 rounded-lg p-4 overflow-y-auto">
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-2">Game Over</h2>
+            <h2 className="text-3xl md:text-4xl  text-white mb-2">Game Over</h2>
             <p className="text-xl md:text-2xl text-white mb-2">Total Score: {score}</p>
             {isHighScore && (
               <p className="text-lg md:text-xl text-yellow-400 mb-2">🏆 New High Score! 🏆</p>
@@ -501,7 +496,7 @@ export default function FruitNinjaGame() {
                           )}
                           <span className="text-white truncate">@{name}</span>
                         </div>
-                        <span className="text-white font-bold ml-2 flex-shrink-0">{score}</span>
+                        <span className="text-white   ml-2 flex-shrink-0">{score}</span>
                       </div>
                     );
                   })
@@ -511,14 +506,14 @@ export default function FruitNinjaGame() {
 
             <div className="flex flex-col gap-3 w-full max-w-sm">
               <button
-                className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full text-lg md:text-xl font-bold shadow-lg hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all"
+                className="bg-orange-500 text-white px-8 py-3 rounded-full text-lg md:text-xl   shadow-lg hover:bg-orange-600 transition-all"
                 onClick={startGame}
               >
                 Play Again
               </button>
               
               <button
-                className="bg-gradient-to-r from-green-500 to-green-600 text-white px-8 py-3 rounded-full text-lg md:text-xl font-bold shadow-lg hover:from-green-600 hover:to-green-700 transform hover:scale-105 transition-all flex items-center justify-center gap-2"
+                className="bg-green-500 text-white px-8 py-3 rounded-full text-lg md:text-xl   shadow-lg hover:bg-green-600 transition-all flex items-center justify-center gap-2"
                 onClick={shareToFeed}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -529,10 +524,6 @@ export default function FruitNinjaGame() {
             </div>
           </div>
         )}
-      </div>
-      
-      <div className="text-center mt-4 text-sm text-gray-600">
-        <p>Swipe to slice fruits • Avoid bombs • Get combos for extra points</p>
       </div>
     </div>
   );
