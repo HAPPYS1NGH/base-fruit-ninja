@@ -1,17 +1,17 @@
 import React from 'react';
 import { ImageResponse } from 'next/og';
-import type { NextRequest } from 'next/server';
 
 export const runtime = 'edge';
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
+  console.log('OG share image requested');
+  console.log(req);
   const { searchParams } = new URL(req.url);
+  console.log(searchParams);
   const score = searchParams.get('score') || '100';
   const pfp = searchParams.get('pfp') || 'https://i.imgur.com/7ffGYrq.jpg';
 
   // Load font and images
-  const fontUrl = `${process.env.NEXT_PUBLIC_URL || ''}/fonts/Gotens/gotens-regular.otf`;
-  const fontData = await fetch(fontUrl).then(res => res.arrayBuffer());
   const boardOgUrl = `${process.env.NEXT_PUBLIC_URL || ''}/board-og.png`;
   const logoUrl = `${process.env.NEXT_PUBLIC_URL || ''}/white-logo.png`;
   const swordUrl = `${process.env.NEXT_PUBLIC_URL || ''}/sword.png`;
@@ -96,13 +96,6 @@ export async function GET(req: NextRequest) {
     {
       width: 1200,
       height: 630,
-      fonts: [
-        {
-          name: 'Gotens',
-          data: fontData,
-          style: 'normal',
-        },
-      ],
     }
   );
 } 

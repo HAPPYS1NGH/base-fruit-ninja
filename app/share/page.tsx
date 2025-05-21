@@ -12,7 +12,14 @@ export async function generateMetadata({ params }: { params: { score: string, pf
   const score = params.score;
   const pfp = params.pfp;
   // const victims = searchParams?.victims || '[]';
+  console.log('score', score);
+  console.log('pfp', pfp);
+  console.log('process.env.NEXT_PUBLIC_URL', process.env.NEXT_PUBLIC_URL);
+  console.log('getOgImageUrl called');
+  
   const imageUrl = getOgImageUrl(score, pfp);
+
+  console.log('imageUrl', imageUrl);
 
   // See: https://miniapps.farcaster.xyz/docs/guides/sharing
   const frameMeta = {
