@@ -79,7 +79,7 @@ export default function LeaderboardPage() {
               >
                 {
                   index <3 ? 
-                    <div className=" relative">
+                    <div className=" relative ">
                   <div className="absolute -top-2 -left-2 rotate-12 z-10 overflow-visible">
                   {/* Rank */}
                     <RankBadge rank={index + 1} />

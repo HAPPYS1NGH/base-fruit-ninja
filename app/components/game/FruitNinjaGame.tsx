@@ -7,6 +7,7 @@ import { saveHighScore, getPlayerBestScore, getLeaderboard } from '@/lib/supabas
 import Link from "next/link";
 import { sdk } from '@farcaster/frame-sdk';
 import Trophy from "../ui/Trophy";
+import Image from "next/image";
 // Game constants
 const INITIAL_SPAWN_RATE = 800; // ms - Decreased from 1000 for more frequent spawns
 // const MIN_SPAWN_RATE = 600; // ms
@@ -489,10 +490,10 @@ export default function FruitNinjaGame() {
           ) : (
             <Link 
               href="/leaderboard"
-              className="bg-white text-tangerine-500 px-4 py-2 rounded-full transition-all flex items-center gap-2"
+              className="bg-white text-tangerine-500 px-4 py-2 rounded-full transition-all flex items-center  gap-2"
             >
               <Trophy color="#FF8011" size={17} />
-              <span>Leaderboard</span>
+              <span className="font-inter ">Leaderboard</span>
             </Link>
           )}
         </div>
@@ -506,7 +507,8 @@ export default function FruitNinjaGame() {
         
         {!gameStarted && !gameOver && (
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <div className="bg-tangerine-500 text-white text-center p-6 rounded-lg shadow-lg mb-8 max-w-xs">
+            <div className="bg-tangerine-500 text-white text-center p-6 rounded-lg shadow-lg mb-4 max-w-xs flex items-center flex-col ">
+              <Image src="/logo.png" alt="Face Breaker" width={70} height={70} />
               <h2 className="text-4xl mb-2">Face Breaker</h2>
               <p className="text-lg font-inter">
               Slice your followers!<br />
@@ -514,7 +516,7 @@ export default function FruitNinjaGame() {
               </p>
             </div>
             <button
-              className="bg-white text-tangerine-500 px-12 py-4 rounded-lg text-3xl shadow-lg hover:bg-gray-100 transition-all text-center"
+              className="bg-white text-tangerine-500 px-16 py-4 max-w-xs rounded-lg text-3xl shadow-lg hover:bg-gray-100 transition-all text-center"
               onClick={startGame}
             >
               Start Game
