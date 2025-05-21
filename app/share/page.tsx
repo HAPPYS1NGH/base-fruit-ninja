@@ -4,7 +4,7 @@ import { Metadata } from 'next';
 function getOgImageUrl(score: string, pfp: string) {
   // You should implement a real OG image endpoint for production!
   // For now, just use the same share page with a special param
-  return `${process.env.NEXT_PUBLIC_URL}/api/og/share?score=${score}&pfp=${pfp}`;
+  return `${process.env.NEXT_PUBLIC_URL}/api/og?score=${score}&pfp=${pfp}`;
 }
 
 // Server-side metadata for Farcaster frame embed
