@@ -93,16 +93,19 @@ export default function FruitNinjaGame() {
   // Check collision with blade
   const checkSlice = useCallback((x: number, y: number) => {
     if (!gameStarted || gameOver) return;
-    
     fruitsRef.current.forEach((fruit) => {
       if (!fruit.sliced) {
         const distance = Math.sqrt(
           Math.pow(fruit.x - x, 2) + Math.pow(fruit.y - y, 2)
         );
-        
         if (distance < fruit.radius) {
           fruit.slice();
-          
+          // Always play a new sound instance for every slice, allowing full overlap
+          setTimeout(() => {
+            const tempAudio = new window.Audio('/sliced.mp3');
+            tempAudio.volume = 0.7;
+            tempAudio.play();
+          }, 0);
           // Check if it's a bomb
           if (fruit.name === "bomb") {
             endGame();
