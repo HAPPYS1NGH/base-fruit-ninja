@@ -470,7 +470,7 @@ export default function FruitNinjaGame() {
     // Dynamically render - splash-board for intial, and play-board for game
     
     <div  className={`bg-background  `} style={{
-      backgroundImage: `url('${gameStarted ? '/play-board.png' : '/splash-board.png'}')`,
+      backgroundImage: `url('${!gameStarted  && !gameOver ?  '/splash-board.png': '/play-board.png' }')`,
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundAttachment: "fixed"
@@ -485,7 +485,7 @@ export default function FruitNinjaGame() {
           
           {gameStarted ? (
             <div className="bg-white text-tangerine-500 px-6 py-2 rounded-full font-bold text-xl">
-              {timeLeft}s
+              {timeLeft}
             </div>
           ) : (
             <Link 
@@ -525,61 +525,69 @@ export default function FruitNinjaGame() {
         )}
         
         {gameOver && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70 rounded-lg p-4 overflow-y-auto">
-            <h2 className="text-3xl md:text-4xl text-white mb-2">Game Over</h2>
-            <p className="text-xl md:text-2xl text-white mb-2">Total Score: {score}</p>
-            {isHighScore && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center overflow-y-auto">
+
+            <h2 className="text-3xl md:text-4xl text-white mb-2">GAME OVER</h2>
+            <p className="text-3xl md:text-4xl text-white mb-4 font-bold">Total Score: {score}</p>
+            {/* {isHighScore && (
               <p className="text-lg md:text-xl text-yellow-400 mb-2">🏆 New High Score! 🏆</p>
-            )}
+            )} */}
             
             {/* Top 3 Followers Scores */}
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 mb-4 w-full max-w-sm">
-              <h3 className="text-lg md:text-xl text-white mb-3 text-center">Top Slices</h3>
-              <div className="max-h-48 overflow-y-auto">
-                {Object.entries(followerScores)
-                  .sort(([,a], [,b]) => b - a)
-                  .slice(0, 3)
-                  .map(([name, score], index) => {
-                    const fruit = FRUITS.find(f => f.name === name);
-                    return (
-                      <div key={name} className="flex items-center justify-between mb-2 last:mb-0 p-2 hover:bg-white hover:bg-opacity-5 rounded transition-colors">
-                        <div className="flex items-center min-w-0">
-                          <span className="text-white mr-2">{index + 1}.</span>
-                          {fruit && (
+            <div className="w-full max-w-md flex flex-col items-center">
+              <div className="backdrop-blur-xl bg-black/40 rounded-3xl p-6 w-full flex flex-col items-center">
+                <h3 className="text-2xl text-white font-bold mb-4 text-center font-gotens">Top Slices</h3>
+                <div className="w-full flex flex-col gap-4 mb-6">
+                  {Object.entries(followerScores)
+                    .sort(([,a], [,b]) => b - a)
+                    .slice(0, 3)
+                    .map(([name, score], index) => {
+                      const fruit = FRUITS.find(f => f.name === name);
+                      return (
+                        <div key={name} className="bg-white rounded-xl shadow-md w-full flex items-center px-2 py-1 gap-3">
+                          {/* Rank */}
+                          <div className="flex-shrink-0 flex justify-center">
+                            <span className="text-gray-500 text-sm ">{(index+1).toString().padStart(2, '0')}</span>
+                          </div>
+                          {/* Profile Picture */}
+                          <div className="relative w-10 h-10 flex-shrink-0">
                             <img 
-                              src={fruit.image} 
+                              src={fruit?.image || '/default-avatar.png'} 
                               alt={name}
-                              className="w-8 h-8 rounded-full mr-2 flex-shrink-0"
+                              className="rounded-full object-cover w-10 h-10"
                             />
-                          )}
-                          <span className="text-white truncate">@{name}</span>
+                          </div>
+                          {/* User Info */}
+                          <div className="flex-grow min-w-0">
+                            <h3 className="text-[15px] font-inter font-bold text-black truncate">{name}</h3>
+                          </div>
+                          {/* Score */}
+                          <div className="flex-shrink-0 text-3xl text-tangerine-500">
+                            {score}
+                          </div>
                         </div>
-                        <span className="text-white ml-2 flex-shrink-0">{score}</span>
-                      </div>
-                    );
-                  })
-                }
+                      );
+                    })
+                  }
+                </div>
+                <div className="flex flex-col gap-3 w-full mt-2">
+                  <button
+                    className="bg-white text-tangerine-500 px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg hover:text-tangerine-600 transition-all mx-4 font-gotens"
+                    onClick={startGame}
+                  >
+                    Play again
+                  </button>
+                  <button
+                    className="bg-tangerine-500 text-white px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg hover:bg-tangerine-600 transition-all flex items-center justify-center gap-2 cursor-pointer font-gotens"
+                    onClick={shareToFeed}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                    </svg>
+                    Share Score
+                  </button>
+                </div>
               </div>
-            </div>
-
-            <div className="flex flex-col gap-3 w-full max-w-sm">
-              <button
-                className="bg-white text-tangerine-500 px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg hover:text-tangerine-600 transition-all mx-4"
-                onClick={startGame}
-              >
-                Play Again
-              </button>
-              
-              <button
-                className="bg-tangerine-500 text-white px-8 py-3 rounded-xl text-2xl md:text-xl shadow-lg 
-                  hover:bg-tangerine-600 transition-all flex items-center justify-center gap-2 cursor-pointer"
-                onClick={shareToFeed}
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 md:h-6 md:w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
-                </svg>
-                Share Score
-              </button>
             </div>
           </div>
         )}
