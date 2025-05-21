@@ -8,9 +8,9 @@ function getOgImageUrl(score: string, pfp: string) {
 }
 
 // Server-side metadata for Farcaster frame embed
-export async function generateMetadata({ params }: { params: { score: string, pfp: string } }): Promise<Metadata> {
-  const score = params.score;
-  const pfp = params.pfp;
+export async function generateMetadata({ searchParams }: { searchParams: { score?: string, pfp?: string } }): Promise<Metadata> {
+  const score = searchParams?.score || '100';
+  const pfp = searchParams?.pfp || 'https://i.imgur.com/7ffGYrq.jpg';
   // const victims = searchParams?.victims || '[]';
   console.log('score', score);
   console.log('pfp', pfp);
