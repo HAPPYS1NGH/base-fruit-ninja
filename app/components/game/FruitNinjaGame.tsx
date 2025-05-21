@@ -422,26 +422,26 @@ export default function FruitNinjaGame() {
       }
 
       // Create the share URL with victims data
-      const shareUrl = `${process.env.NEXT_PUBLIC_URL}/share/${score}`;
+      const shareUrl = `${process.env.NEXT_PUBLIC_URL}/share?score=${score}&pfp=${context?.user.pfpUrl}`;
       console.log("Share URL:", shareUrl);
 
       // Create different cast text based on whether it's a new high score
       let castText = '';
       
-      if (isHighScore && previousTopScorer) {
-        // New high score cast text with mention of previous record holder
-        castText = `🏆 NEW HIGH SCORE: ${score.toLocaleString()} points! 🏆\n\n`;
-        castText += `Sorry @${previousTopScorer.username}, your record has been broken! I'm the new champion! 👑\n\n`;
-        castText += `Destroyed ${topVictims.length} faces in Facebreaker!\n\n`;
+      // if (isHighScore && previousTopScorer) {
+      //   // New high score cast text with mention of previous record holder
+      //   castText = `🏆 NEW HIGH SCORE: ${score.toLocaleString()} points! 🏆\n\n`;
+      //   castText += `Sorry @${previousTopScorer.username}, your record has been broken! I'm the new champion! 👑\n\n`;
+      //   castText += `Destroyed ${topVictims.length} faces in Facebreaker!\n\n`;
         
-        // Add victims
-        const mentions = topVictims
-          .map(v => `@${v.username} (${v.score.toLocaleString()} pts)`)
-          .join('\n');
-        castText += `Victims:\n${mentions}\n\n`;
+      //   // Add victims
+      //   const mentions = topVictims
+      //     .map(v => `@${v.username} (${v.score.toLocaleString()} pts)`)
+      //     .join('\n');
+      //   castText += `Victims:\n${mentions}\n\n`;
         
-        castText += `Can you break my record? 🔥\n\nPlay now: ${shareUrl}`;
-      } else {
+      //   castText += `Can you break my record? 🔥\n\nPlay now: ${shareUrl}`;
+      // } else {
         // Regular cast text
         castText = `⚔️ Destroyed ${topVictims.length} faces in Facebreaker!\n\n`;
         castText += `Total Score: ${score.toLocaleString()}\n\n`;
@@ -453,7 +453,7 @@ export default function FruitNinjaGame() {
         castText += `Victims:\n${mentions}\n\n`;
         
         castText += `Can you break more? 🔥\n\nPlay now: ${shareUrl}`;
-      }
+      // }
 
       // Use Farcaster Mini Apps SDK to open the cast composer
       await sdk.actions.composeCast({

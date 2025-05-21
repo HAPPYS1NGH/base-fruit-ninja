@@ -1,8 +1,6 @@
 import React from 'react';
 import { ImageResponse } from 'next/og';
 import type { NextRequest } from 'next/server';
-import fs from 'fs/promises';
-import path from 'path';
 
 export const runtime = 'edge';
 
@@ -12,7 +10,8 @@ export async function GET(req: NextRequest) {
   const pfp = searchParams.get('pfp') || 'https://i.imgur.com/7ffGYrq.jpg';
 
   // Load font and images
-  const fontData = await fs.readFile(path.join(process.cwd(), 'fonts/Gotens/gotens-regular.otf'));
+  const fontUrl = `${process.env.NEXT_PUBLIC_URL || ''}/fonts/Gotens/gotens-regular.otf`;
+  const fontData = await fetch(fontUrl).then(res => res.arrayBuffer());
   const boardOgUrl = `${process.env.NEXT_PUBLIC_URL || ''}/board-og.png`;
   const logoUrl = `${process.env.NEXT_PUBLIC_URL || ''}/white-logo.png`;
   const swordUrl = `${process.env.NEXT_PUBLIC_URL || ''}/sword.png`;
