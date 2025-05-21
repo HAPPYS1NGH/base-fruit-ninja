@@ -42,7 +42,14 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-xl mx-auto p-4 pt-0 flex flex-col">
+    <div  className={`bg-background  `} style={{
+      backgroundImage: `url('/board.png')`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundAttachment: "fixed"
+    }}>
+
+        <div className="min-h-screen w-full max-w-xl mx-auto p-4 pt-0 flex flex-col">
       {/* Header Section */}
       <div className="bg-tangerine-500 rounded-xl p-4 mx-4 rounded-t-none mb-6 shadow-lg text-center">
         <h1 className="text-4xl text-white">Leaderboard</h1>
@@ -124,6 +131,7 @@ export default function LeaderboardPage() {
       >
         Back to Game
       </Link>
+    </div>
     </div>
   );
 } 

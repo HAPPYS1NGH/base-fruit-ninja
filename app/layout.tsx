@@ -48,12 +48,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${gotens.variable} ${inter.variable}`}>
-      <body className={`bg-background mt-0 font-gotens `} style={{
-        backgroundImage: "url('/board.png')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundAttachment: "fixed"
-      }}>
+        <body className={`mt-0 font-gotens `}>
         <Providers>{children}</Providers>
       </body>
     </html>
