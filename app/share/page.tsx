@@ -1,17 +1,25 @@
 import { Metadata } from 'next';
 
 // Helper to build the OG image URL for the meta tag
-function getOgImageUrl(score: string) {
+function getOgImageUrl(score: string, pfp: string) {
   // You should implement a real OG image endpoint for production!
   // For now, just use the same share page with a special param
-  return `${process.env.NEXT_PUBLIC_URL}/api/og/score?score=${score}}`;
+  return `${process.env.NEXT_PUBLIC_URL}/api/og?score=${score}&pfp=${pfp}`;
 }
 
 // Server-side metadata for Farcaster frame embed
-export async function generateMetadata({ params }: { params: { score: string } }): Promise<Metadata> {
-  const score = params.score;
+export async function generateMetadata({ searchParams }: { searchParams: { score?: string, pfp?: string } }): Promise<Metadata> {
+  const score = searchParams?.score || '100';
+  const pfp = searchParams?.pfp || 'https://i.imgur.com/7ffGYrq.jpg';
   // const victims = searchParams?.victims || '[]';
-  const imageUrl = getOgImageUrl(score);
+  console.log('score', score);
+  console.log('pfp', pfp);
+  console.log('process.env.NEXT_PUBLIC_URL', process.env.NEXT_PUBLIC_URL);
+  console.log('getOgImageUrl called');
+  
+  const imageUrl = getOgImageUrl(score, pfp);
+
+  console.log('imageUrl', imageUrl);
 
   // See: https://miniapps.farcaster.xyz/docs/guides/sharing
   const frameMeta = {

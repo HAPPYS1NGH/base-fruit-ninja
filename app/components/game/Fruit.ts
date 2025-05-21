@@ -201,6 +201,13 @@ export class Fruit {
     ctx.translate(this.x, this.y);
     ctx.rotate(this.rotation);
 
+    // Draw white border first
+    ctx.beginPath();
+    ctx.arc(0, 0, this.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = 'white';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+
     // Create circular clipping path
     ctx.beginPath();
     ctx.arc(0, 0, this.radius, 0, Math.PI * 2);

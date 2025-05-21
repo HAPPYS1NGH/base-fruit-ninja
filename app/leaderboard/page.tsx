@@ -7,13 +7,19 @@ import Link from 'next/link';
 import Trophy from '@/app/components/ui/Trophy';
 
 // Rank badge components
-const RankBadge = ({ rank }: { rank: number }) => {
+const RankBadge = ({ rank, size = 18 }: { rank: number, size?: number }) => {
   if (rank === 1) {
-    return <Trophy color="#FFD700" size={18} />; // Gold
+    return <div className='bg-[#FFD700] p-1 rounded-full'>
+      <Trophy color="#fff"  size={size} />
+    </div>
   } else if (rank === 2) {
-    return <Trophy color="#C0C0C0" size={18} />; // Silver
+    return <div className='bg-[#C0C0C0] p-1 rounded-full'>
+      <Trophy color="#fff"  size={size} />
+    </div>
   } else if (rank === 3) {
-    return <Trophy color="#CD7F32" size={18} />; // Bronze
+    return <div className='bg-[#CD7F32] p-1 rounded-full'>
+      <Trophy color="#fff"  size={size} />
+    </div>
   }
   return <span className="text-gray-500 text-sm ">{rank.toString().padStart(2, '0')}</span>;
 };
@@ -42,9 +48,16 @@ export default function LeaderboardPage() {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-xl mx-auto p-4 pt-0 flex flex-col">
+    <div  className={`bg-background  `} style={{
+      backgroundImage: `url('/board.png')`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundAttachment: "fixed"
+    }}>
+
+        <div className="min-h-screen w-full max-w-xl mx-auto p-4 pt-0 flex flex-col">
       {/* Header Section */}
-      <div className="bg-orange-500 rounded-xl p-4 mx-4 rounded-t-none mb-6 shadow-lg text-center">
+      <div className="bg-tangerine-500 rounded-xl p-4 mx-4 rounded-t-none mb-6 shadow-lg text-center">
         <h1 className="text-4xl text-white">Leaderboard</h1>
       </div>
 
@@ -53,7 +66,7 @@ export default function LeaderboardPage() {
         {loading ? (
           <div className="flex flex-col items-center justify-center h-[60vh] gap-4">
             <div className="relative w-16 h-16">
-              <div className="absolute inset-0 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+              <div className="absolute inset-0 border-4 border-tangerine-500 border-t-transparent rounded-full animate-spin"></div>
             </div>
             <p className="text-white animate-pulse">Loading scores...</p>
           </div>
@@ -62,9 +75,47 @@ export default function LeaderboardPage() {
             {scores.map((score, index) => (
               <div 
                 key={score.id}
-                className="bg-white rounded-xl shadow-md w-full overflow-hidden"
+                className="bg-white rounded-xl shadow-md w-full "
               >
-                <div className="flex items-center px-2 py-1 gap-3">
+                {
+                  index <3 ? 
+                    <div className=" relative ">
+                  <div className="absolute -top-2 -left-2 rotate-12 z-10 overflow-visible">
+                  {/* Rank */}
+                    <RankBadge rank={index + 1} />
+                  </div>
+                  <div className="flex items-center px-2 py-1 gap-3">
+
+                    
+
+                  {/* Profile Picture */}
+                  <div className="relative w-14 h-14 flex-shrink-0">
+                    <Image
+                      src={score.pfp_url || '/default-avatar.png'}
+                      alt={score.username}
+                      fill
+                      className="rounded-full object-cover"
+                    />
+                  </div>
+
+                  {/* User Info */}
+                  <div className="flex-grow min-w-0">
+                    <h3 className=" text-[16px] font-inter font-bold text-black">
+                      {formatName(score.name || score.username)}
+                    </h3>
+                    <p className="text-gray-400 text-sm font-inter">
+                      @{score.username}
+                    </p>
+                  </div>
+
+                  {/* Score */}
+                  <div className="flex-shrink-0 text-5xl text-tangerine-500">
+                    {score.score.toLocaleString()}
+                  </div>
+                  </div>
+                </div>
+                  :
+                  <div className="flex items-center px-2 py-1 gap-3">
                   {/* Rank */}
                   <div className="flex-shrink-0 flex justify-center">
                     <RankBadge rank={index + 1} />
@@ -91,10 +142,12 @@ export default function LeaderboardPage() {
                   </div>
 
                   {/* Score */}
-                  <div className="flex-shrink-0 text-5xl text-orange-500">
+                  <div className="flex-shrink-0 text-5xl text-tangerine-500">
                     {score.score.toLocaleString()}
                   </div>
                 </div>
+                }
+                
               </div>
             ))}
 
@@ -106,7 +159,7 @@ export default function LeaderboardPage() {
                 </p>
                 <Link 
                   href="/"
-                  className="inline-flex items-center gap-2 bg-orange-500 text-white px-6 py-3 rounded-full font-bold hover:bg-orange-600 transition-all"
+                  className="inline-flex items-center gap-2 bg-tangerine-500 text-white px-6 py-3 rounded-full font-bold hover:bg-tangerine-600 transition-all"
                 >
                   <span>🎮</span>
                   <span>Play Now</span>
@@ -120,10 +173,11 @@ export default function LeaderboardPage() {
       {/* Back button */}
       <Link 
         href="/"
-        className="bg-orange-500 text-white font-bold px-6 py-3 rounded-full mt-6 text-center hover:bg-orange-600 transition-all"
+        className="bg-tangerine-500 text-white px-6 py-3 rounded-xl mt-6 text-3xl text-center hover:bg-tangerine-600 transition-all"
       >
         Back to Game
       </Link>
+    </div>
     </div>
   );
 } 
