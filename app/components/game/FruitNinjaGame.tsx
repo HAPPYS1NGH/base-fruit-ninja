@@ -3,10 +3,11 @@ import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Fruit, FRUITS, initializeFruitsWithFollowers } from "./Fruit";
 import { Blade } from "./Blade";
-import { saveHighScore, getPlayerBestScore } from '@/lib/supabase/db';
+import { saveHighScore, getPlayerBestScore, getLeaderboard } from '@/lib/supabase/db';
 import Link from "next/link";
 import { sdk } from '@farcaster/frame-sdk';
 import Image from "next/image";
+import Trophy from "../ui/Trophy";
 // Game constants
 const INITIAL_SPAWN_RATE = 800; // ms - Decreased from 1000 for more frequent spawns
 // const MIN_SPAWN_RATE = 600; // ms
@@ -387,7 +388,7 @@ export default function FruitNinjaGame() {
   // Function to share score to feed
   const shareToFeed = async () => {
     try {
-      // Get top 
+      // Get top victims from current game
       const topVictims = Object.entries(followerScores)
         .sort(([, a], [, b]) => b - a)
         .slice(0, 6)
@@ -400,15 +401,56 @@ export default function FruitNinjaGame() {
           };
         });
 
+      // Get previous top scorer if this is a new high score
+      let previousTopScorer = null;
+      if (isHighScore && context) {
+        try {
+          const leaderboardData = await getLeaderboard(5);
+          
+          // Find the top scorer who isn't the current player
+          previousTopScorer = leaderboardData.find(entry => 
+            entry.fid !== context.user.fid && entry.score < score
+          );
+          
+          console.log("Previous top scorer:", previousTopScorer);
+        } catch (error) {
+          console.error("Error fetching leaderboard for cast:", error);
+        }
+      }
+
       // Create the share URL with victims data
       const shareUrl = `${process.env.NEXT_PUBLIC_URL}/share/${score}`;
       console.log("Share URL:", shareUrl);
 
-      // Create the cast text with mentions and scores
-      const mentions = topVictims
-        .map(v => `@${v.username} (${v.score.toLocaleString()} pts)`)
-        .join('\n');
-      const castText = `⚔️ Destroyed ${topVictims.length} faces in Facebreaker!\n\nTotal Score: ${score.toLocaleString()}\n\nVictims:\n${mentions}\n\nCan you break more? 🔥\n\nPlay now: ${shareUrl}`;
+      // Create different cast text based on whether it's a new high score
+      let castText = '';
+      
+      if (isHighScore && previousTopScorer) {
+        // New high score cast text with mention of previous record holder
+        castText = `🏆 NEW HIGH SCORE: ${score.toLocaleString()} points! 🏆\n\n`;
+        castText += `Sorry @${previousTopScorer.username}, your record has been broken! I'm the new champion! 👑\n\n`;
+        castText += `Destroyed ${topVictims.length} faces in Facebreaker!\n\n`;
+        
+        // Add victims
+        const mentions = topVictims
+          .map(v => `@${v.username} (${v.score.toLocaleString()} pts)`)
+          .join('\n');
+        castText += `Victims:\n${mentions}\n\n`;
+        
+        castText += `Can you break my record? 🔥\n\nPlay now: ${shareUrl}`;
+      } else {
+        // Regular cast text
+        castText = `⚔️ Destroyed ${topVictims.length} faces in Facebreaker!\n\n`;
+        castText += `Total Score: ${score.toLocaleString()}\n\n`;
+        
+        // Add victims
+        const mentions = topVictims
+          .map(v => `@${v.username} (${v.score.toLocaleString()} pts)`)
+          .join('\n');
+        castText += `Victims:\n${mentions}\n\n`;
+        
+        castText += `Can you break more? 🔥\n\nPlay now: ${shareUrl}`;
+      }
 
       // Use Farcaster Mini Apps SDK to open the cast composer
       await sdk.actions.composeCast({
@@ -425,7 +467,15 @@ export default function FruitNinjaGame() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col items-center">
+    // Dynamically render - splash-board for intial, and play-board for game
+    
+    <div  className={`bg-background  `} style={{
+      backgroundImage: `url('${gameStarted ? '/play-board.png' : '/splash-board.png'}')`,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundAttachment: "fixed"
+    }}>
+      <div className="w-full h-full flex flex-col items-center px-4">
       <div className="bg-tangerine-500 p-4 w-full rounded-lg rounded-t-none shadow-lg mb-4">
         <div className="flex justify-between items-center text-white">
           <div>
@@ -442,7 +492,7 @@ export default function FruitNinjaGame() {
               href="/leaderboard"
               className="bg-white text-tangerine-500 px-4 py-2 rounded-full transition-all flex items-center gap-2"
             >
-              <Image src="/trophy.png" alt="Trophy" width={17} height={17} />
+              <Trophy color="#FF8011" size={17} />
               <span>Leaderboard</span>
             </Link>
           )}
@@ -533,6 +583,7 @@ export default function FruitNinjaGame() {
           </div>
         )}
       </div>
+    </div>
     </div>
   );
 }
