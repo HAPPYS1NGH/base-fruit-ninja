@@ -6,7 +6,6 @@ import { Blade } from "./Blade";
 import { saveHighScore, getPlayerBestScore, getLeaderboard } from '@/lib/supabase/db';
 import Link from "next/link";
 import { sdk } from '@farcaster/frame-sdk';
-import Image from "next/image";
 import Trophy from "../ui/Trophy";
 // Game constants
 const INITIAL_SPAWN_RATE = 800; // ms - Decreased from 1000 for more frequent spawns
