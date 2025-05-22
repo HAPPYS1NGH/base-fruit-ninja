@@ -5,12 +5,8 @@ import {
   useAddFrame,
   // useOpenUrl,
 } from "@coinbase/onchainkit/minikit";
-import { 
-  useEffect, 
-  useCallback
- } from "react";
+import { useEffect, useCallback } from "react";
 import FruitNinjaGame from "./components/game/FruitNinjaGame";
-
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
@@ -26,11 +22,11 @@ export default function App() {
   }, [setFrameReady, isFrameReady]);
 
   const handleAddFrame = useCallback(async () => {
-    if(context && !context.client.added) {
+    if (context && !context.client.added) {
       try {
         await addFrame();
       } catch (error) {
-        console.error('Error adding frame:', error);
+        console.error("Error adding frame:", error);
       }
     }
   }, [addFrame, context]);
@@ -38,6 +34,13 @@ export default function App() {
   useEffect(() => {
     console.log("handleAddFrame called");
     handleAddFrame();
+    // Prevent scrolling on the main game screen
+    document.documentElement.style.overflow = "hidden";
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
   }, [handleAddFrame]);
 
   return (
