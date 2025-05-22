@@ -5,8 +5,8 @@ import {
   useAddFrame,
   // useOpenUrl,
 } from "@coinbase/onchainkit/minikit";
-import { useEffect, 
-  useState, 
+import { 
+  useEffect, 
   useCallback
  } from "react";
 import FruitNinjaGame from "./components/game/FruitNinjaGame";
