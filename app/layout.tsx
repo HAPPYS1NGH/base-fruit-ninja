@@ -1,14 +1,15 @@
-import './theme.css';
-import '@coinbase/onchainkit/styles.css';
-import type { Metadata, Viewport } from 'next';
-import './globals.css';
-import { Providers } from './providers';
-import { gotens } from '../fonts';
-import { Inter } from 'next/font/google';
+import "./theme.css";
+import "@coinbase/onchainkit/styles.css";
+import type { Metadata, Viewport } from "next";
+import "./globals.css";
+import { Providers } from "./providers";
+import { gotens } from "../fonts";
+import { Inter } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 
 const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
+  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export const viewport: Viewport = {
@@ -48,8 +49,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${gotens.variable} ${inter.variable}`}>
-        <body className={`mt-0 font-gotens `}>
+      <body className={`mt-0 font-gotens `}>
         <Providers>{children}</Providers>
+        <Analytics />
       </body>
     </html>
   );
