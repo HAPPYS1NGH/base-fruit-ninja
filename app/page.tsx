@@ -2,22 +2,21 @@
 
 import {
   useMiniKit,
-  // useAddFrame,
+  useAddFrame,
   // useOpenUrl,
 } from "@coinbase/onchainkit/minikit";
-import { useEffect, 
-  // useState, 
-  // useCallback
+import { 
+  useEffect, 
+  useCallback
  } from "react";
 import FruitNinjaGame from "./components/game/FruitNinjaGame";
 
 
 export default function App() {
-  const { setFrameReady, isFrameReady } = useMiniKit();
-  // const [frameAdded, setFrameAdded] = useState(false);
+  const { setFrameReady, isFrameReady, context } = useMiniKit();
   // const [activeTab, setActiveTab] = useState("home");
 
-  // const addFrame = useAddFrame();
+  const addFrame = useAddFrame();
   // const openUrl = useOpenUrl();
 
   useEffect(() => {
@@ -26,49 +25,24 @@ export default function App() {
     }
   }, [setFrameReady, isFrameReady]);
 
-  // const handleAddFrame = useCallback(async () => {
-  //   const frameAdded = await addFrame();
-  //   setFrameAdded(Boolean(frameAdded));
-  // }, [addFrame]);
+  const handleAddFrame = useCallback(async () => {
+    if(context && !context.client.added) {
+      try {
+        await addFrame();
+      } catch (error) {
+        console.error('Error adding frame:', error);
+      }
+    }
+  }, [addFrame, context]);
 
-  // const saveFrameButton = useMemo(() => {
-  //   if (context && !context.client.added) {
-  //     return (
-  //       <Button
-  //         variant="ghost"
-  //         size="sm"
-  //         onClick={handleAddFrame}
-  //         className="text-[var(--app-accent)] p-4"
-  //         icon={<Icon name="plus" size="sm" />}
-  //       >
-  //         Save Frame
-  //       </Button>
-  //     );
-  //   }
-
-  //   if (frameAdded) {
-  //     return (
-  //       <div className="flex items-center space-x-1 text-sm font-medium text-[#0052FF] animate-fade-out">
-  //         <Icon name="check" size="sm" className="text-[#0052FF]" />
-  //         <span>Saved</span>
-  //       </div>
-  //     );
-  //   }
-
-  //   return null;
-  // }, [context, frameAdded, handleAddFrame]);
+  useEffect(() => {
+    console.log("handleAddFrame called");
+    handleAddFrame();
+  }, [handleAddFrame]);
 
   return (
     <div className="flex flex-col min-h-screen font-sans text-[var(--app-foreground)] mini-app-theme from-[var(--app-background)] to-[var(--app-gray)]">
       <div className="w-full max-w-md mx-auto  py-0 mt-0">
-        {/* <header className="flex justify-between items-center mb-3 h-11">
-          <div>
-            <div className="flex items-center space-x-2">
-            </div>
-          </div>
-          <div>{saveFrameButton}</div>
-        </header> */}
-
         <main className="flex-1">
           <FruitNinjaGame />
           {/* {activeTab === "home" && <FruitNinjaGame />}

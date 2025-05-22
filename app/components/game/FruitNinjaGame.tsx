@@ -400,7 +400,8 @@ export default function FruitNinjaGame() {
           return {
             username,
             score,
-            pfp: fruit?.image || ''
+            pfp: fruit?.image || '',
+            fid: fruit?.fid,
           };
         });
 
@@ -460,6 +461,47 @@ export default function FruitNinjaGame() {
         text: castText,
         embeds: [shareUrl]
       });
+
+      // Send notification to all people who got cut (topVictims)
+      for (const victim of topVictims) {
+        if (victim.fid) {
+          try { 
+            fetch('/api/notify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+              fid: victim.fid,
+              notification: {
+                title: 'You got sliced!',
+                body: `You were cut in Facebreaker by @${context?.user.username || 'someone'}!`,
+                url: process.env.NEXT_PUBLIC_URL,
+              },
+            }),
+          });
+        } catch (error) {
+          console.error('Error sending notification to victims :', victim.username,  error);
+        }
+      }
+      }
+
+      // If new high score, notify previous top scorer
+      if (isHighScore && previousTopScorer && previousTopScorer.fid) {
+        try {
+          fetch('/api/notify', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+            fid: previousTopScorer.fid,
+            notification: {
+              title: 'Your record was broken!',
+              body: `@${context?.user.username || 'Someone'} broke your Facebreaker record!`,
+              url: process.env.NEXT_PUBLIC_URL,
+            },
+          }),
+        });
+      } catch (error) {
+        console.error('Error sending notification to previous top scorer:', previousTopScorer.username, error);
+      }}
 
       // Optionally, show a message or handle result
       // alert('Cast composer opened!');
