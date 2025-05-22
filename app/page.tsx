@@ -14,7 +14,6 @@ import FruitNinjaGame from "./components/game/FruitNinjaGame";
 
 export default function App() {
   const { setFrameReady, isFrameReady, context } = useMiniKit();
-  const [frameAdded, setFrameAdded] = useState(false);
   // const [activeTab, setActiveTab] = useState("home");
 
   const addFrame = useAddFrame();
@@ -28,8 +27,11 @@ export default function App() {
 
   const handleAddFrame = useCallback(async () => {
     if(context && !context.client.added) {
-      const frameAdded = await addFrame();
-      setFrameAdded(Boolean(frameAdded));
+      try {
+        await addFrame();
+      } catch (error) {
+        console.error('Error adding frame:', error);
+      }
     }
   }, [addFrame, context]);
 
