@@ -3,45 +3,52 @@ const nextConfig = {
   // Silence warnings
   // https://github.com/WalletConnect/walletconnect-monorepo/issues/1908
   webpack: (config) => {
-    config.externals.push('pino-pretty', 'lokijs', 'encoding');
+    config.externals.push("pino-pretty", "lokijs", "encoding");
     return config;
   },
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        hostname: 'i.imgur.com',
-        port: '',
-        pathname: '/**',
-        search: '',
+        protocol: "https",
+        hostname: "i.imgur.com",
+        port: "",
+        pathname: "/**",
+        search: "",
       },
       {
-        protocol: 'https',
-        hostname: 'imagedelivery.net',
-        port: '',
-        pathname: '/**',
-        search: '',
+        protocol: "https",
+        hostname: "imagedelivery.net",
+        port: "",
+        pathname: "/**",
+        search: "",
       },
       {
-        protocol: 'https',
-        hostname: 'ipfs.decentralized-content.com',
-        port: '',
-        pathname: '/**',
-        search: '',
+        protocol: "https",
+        hostname: "ipfs.decentralized-content.com",
+        port: "",
+        pathname: "/**",
+        search: "",
       },
       {
-        protocol: 'https',
-        hostname: 'i.seadn.io',
-        port: '',
-        pathname: '/**',
-        search: '',
+        protocol: "https",
+        hostname: "openseauserdata.com",
+        port: "",
+        pathname: "/**",
+        search: "",
       },
       {
-        protocol: 'https',
-        hostname: 'ipfs.io',
-        port: '',
-        pathname: '/**',
-        search: '',
+        protocol: "https",
+        hostname: "i.seadn.io",
+        port: "",
+        pathname: "/**",
+        search: "",
+      },
+      {
+        protocol: "https",
+        hostname: "ipfs.io",
+        port: "",
+        pathname: "/**",
+        search: "",
       },
     ],
   },
