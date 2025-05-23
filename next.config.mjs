@@ -29,6 +29,20 @@ const nextConfig = {
         pathname: '/**',
         search: '',
       },
+      {
+        protocol: 'https',
+        hostname: 'i.seadn.io',
+        port: '',
+        pathname: '/**',
+        search: '',
+      },
+      {
+        protocol: 'https',
+        hostname: 'ipfs.io',
+        port: '',
+        pathname: '/**',
+        search: '',
+      },
     ],
   },
 };
