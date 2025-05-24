@@ -29,7 +29,7 @@ export async function GET(req: Request) {
   // }
   // Load Goten font from local file
   const gotenFont = await fetch(
-    new URL("/fonts/gotens-regular.otf", import.meta.url),
+    new URL("../../../fonts/Gotens/gotens-regular.otf", import.meta.url),
   ).then((res) => res.arrayBuffer());
 
   const boardOgUrl = `${process.env.NEXT_PUBLIC_URL || ""}/board-og.png`;
