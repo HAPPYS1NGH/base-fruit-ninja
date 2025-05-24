@@ -10,7 +10,6 @@ export async function POST(request: Request) {
       fid,
       title: notification.title,
       body: notification.body,
-      notificationDetails: notification.notificationDetails,
     });
 
     if (result.state === "error") {
@@ -19,6 +18,7 @@ export async function POST(request: Request) {
         { status: 500 },
       );
     }
+    console.log("notification sent to ", fid);
 
     return NextResponse.json({ success: true }, { status: 200 });
   } catch (error) {
