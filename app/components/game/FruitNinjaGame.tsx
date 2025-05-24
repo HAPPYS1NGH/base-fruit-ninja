@@ -412,7 +412,7 @@ export default function FruitNinjaGame() {
       // Get top victims from current game
       const topVictims = Object.entries(followerScores)
         .sort(([, a], [, b]) => b - a)
-        .slice(0, 6)
+        .slice(0, 1)
         .map(([username, score]) => {
           const fruit = FRUITS.find((f) => f.name === username);
           return {
@@ -462,14 +462,14 @@ export default function FruitNinjaGame() {
       //   castText += `Can you break my record? 🔥\n\nPlay now: ${shareUrl}`;
       // } else {
       // Regular cast text
-      castText = `⚔️ Destroyed ${topVictims.length} faces in Facebreaker!\n\n`;
+      castText = `⚔️ Destroyed @${topVictims[0].username}'s face ${topVictims[0].score.toLocaleString()} times in Facebreaker!\n\n`;
       castText += `Total Score: ${score.toLocaleString()}\n\n`;
 
       // Add victims
-      const mentions = topVictims
-        .map((v) => `@${v.username} (${v.score.toLocaleString()} pts)`)
-        .join("\n");
-      castText += `Victims:\n${mentions}\n\n`;
+      // const mentions = topVictims
+      //   .map((v) => `@${v.username} (${v.score.toLocaleString()} pts)`)
+      //   .join("\n");
+      // castText += `Victims:\n${mentions}\n\n`;
 
       castText += `Can you break more? 🔥\n\nPlay now:`;
       // }
@@ -560,7 +560,7 @@ export default function FruitNinjaGame() {
 
             {gameStarted ? (
               <div className="bg-white text-tangerine-500 px-6 py-2 rounded-full font-bold text-xl">
-                {timeLeft}
+                {timeLeft}s
               </div>
             ) : (
               <Link
