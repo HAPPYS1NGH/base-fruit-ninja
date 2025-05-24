@@ -3,11 +3,7 @@ import { useMiniKit } from "@coinbase/onchainkit/minikit";
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Fruit, FRUITS, initializeFruitsWithFollowers } from "./Fruit";
 import { Blade } from "./Blade";
-import {
-  saveHighScore,
-  getPlayerBestScore,
-  getLeaderboard,
-} from "@/lib/supabase/db";
+import { getPlayerBestScore, getLeaderboard } from "@/lib/supabase/db";
 import Link from "next/link";
 import { sdk } from "@farcaster/frame-sdk";
 import Trophy from "../ui/Trophy";
@@ -64,24 +60,39 @@ export default function FruitNinjaGame() {
     console.log("Game over");
     setGameOver(true);
     setGameStarted(false);
-    // For the time being, use a hardcoded FID and other details
+
     if (context && score > 0) {
       try {
-        // Save score to DB
-        console.log("Saving score to DB");
+        // Save score securely via API
+        console.log("Saving score securely via API");
 
-        const success = await saveHighScore(
-          score,
-          context.user.fid,
-          context.user.username || "Unknown",
-          context.user.pfpUrl || "",
-          context.user.displayName || context.user.username || "Unknown", // Use displayName as name if available
-        );
-        console.log("Score saved to DB");
-        console.log("Success", success);
+        const response = await fetch("/api/score", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            score,
+            fid: context.user.fid,
+            username: context.user.username || "Unknown",
+            pfpUrl: context.user.pfpUrl || "",
+            name:
+              context.user.displayName || context.user.username || "Unknown",
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to save score");
+        }
+
+        const result = await response.json();
+        console.log("Score saved securely via API");
+        console.log("Success", result.success);
+        console.log("Is new high score", result.isNewHighScore);
 
         // Update high score if needed
-        if (score > highScore) {
+        if (result.isNewHighScore || score > highScore) {
           setHighScore(score);
           setIsHighScore(true);
         }
